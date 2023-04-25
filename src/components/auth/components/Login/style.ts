@@ -27,6 +27,8 @@ export const StyleContainer = styled.div`
   background-color: rgb(255, 255, 255);
 `;
 
+export const StyleInput = styled.div``
+
 export const StyleTitle = styled.div`
   font-weight: bold;
   height: 50px;
@@ -47,6 +49,7 @@ export const Option = styled.div`
   color: #000000;
   padding: 10px 0;
 `
+
 export const LinkAuth = styled.div`
   color: #7e1037;
   font-weight: 700;
