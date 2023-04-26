@@ -60,16 +60,22 @@ const Login = () => {
           />
           <StyleError>{formik?.errors?.password}</StyleError>
         </StyleInput>
-
-        <Button type="primary" htmlType="submit" size="large">
-          Đăng nhập
+        <div>
+          <Button
+            type="primary"
+            htmlType="submit"
+            size="large"
+            style={{ width: "100%" }}
+          >
+            Đăng nhập
+          </Button>
           <Question>
             <Option>Bạn không có tài khoản?</Option>
-            <LinkAuth onClick={() => navigate('/auth/register')}>
+            <LinkAuth onClick={() => navigate("/register")}>
               Đăng ký
             </LinkAuth>
           </Question>
-        </Button>
+        </div>
       </StyleContainer>
     </StyleForm>
   );

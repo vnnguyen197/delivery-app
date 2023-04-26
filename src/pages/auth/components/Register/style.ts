@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import background from 'assets/images/bgr.jpg'
 
 export const StyleForm = styled.form`
   display: flex;
@@ -8,7 +9,7 @@ export const StyleForm = styled.form`
   align-items: center;
   height: 100vh;
   background-color: gray;
-  /* background-image: url(/static/media/Background.013671f….jpg); */
+  background-image: url(${background});
   background-repeat: no-repeat;
   background-size: cover;
 `;
@@ -25,6 +26,7 @@ export const StyleContainer = styled.div`
   border-radius: 15px;
   box-shadow: rgba(0, 0, 0, 0.5) 0px 2px 8px;
   background-color: rgb(255, 255, 255);
+ 
 `;
 
 export const StyleInput = styled.div`

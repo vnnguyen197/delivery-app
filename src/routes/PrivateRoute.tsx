@@ -14,7 +14,7 @@ const PrivateRoute = ({ layout }: { layout: LayoutType }) => {
   // }
   return (
     <>
-      <Navigate to="/auth/login" replace={true} />
+      <Navigate to="/login" replace={true} />
     </>
   )
 }
