@@ -45,8 +45,16 @@ export const StyleListLeft = styled.div`
 `;
 
 export const StyleInput = styled.div`
+  width: 100%;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+`;
+
+export const StyleLabel = styled.label`
+  width: 20%;
+  color: rgba(51, 48, 60, 0.87);
 `;
 
 export const StyleTitle = styled.h2`
@@ -70,13 +78,12 @@ export const StyleItemRight = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 24px;
 `;
+
 export const StyleItemLeft = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 24px;
 `;
 
 export const StyleTitleUser = styled.h1`
@@ -98,6 +105,11 @@ export const StyleRuleUser = styled.h5`
   color: #25c2a1;
 `;
 
+export const StyleField = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+`;
 export const StyleButton = styled.button`
   margin: auto;
   color: rgb(255, 255, 255);
@@ -128,4 +140,14 @@ export const StyleButton = styled.button`
     color: orange;
     border: 2px solid orange;
   }
+`;
+
+export const StyleError = styled.p`
+  margin-bottom: 12px;
+  padding-left: 125px;
+  display: block;
+  color: red;
+  font-size: 14px;
+  text-align: left;
+  white-space: normal;
 `;

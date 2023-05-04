@@ -5,7 +5,6 @@ export enum LayoutType {
   blank,
   basic,
 }
-
 const Layout = (type: LayoutType) => {
   switch (type) {
     case LayoutType.blank:

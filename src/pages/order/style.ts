@@ -29,7 +29,7 @@ export const StyleDes = styled.h1`
 export const StyleInfoUser = styled.h1`
   font-size: 18px;
   line-height: 1.0625rem;
-  color: rgb(136, 136, 136);
+  color: #33303cde;
 `;
 
 export const StyleListRight = styled.div`

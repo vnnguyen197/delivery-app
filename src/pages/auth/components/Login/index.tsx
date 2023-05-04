@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Button } from "antd";
 import {
   StyleContainer,
@@ -16,9 +16,14 @@ import { useFormik } from "formik";
 import { loginSchema_ } from "validations/loginSchema";
 import { StyleError } from "styles/styleCommon";
 import { useNavigate } from "react-router-dom";
+import { useLoading } from "contexts/LoadingContext";
+import authAPI from "services/authAPI";
+import useToken from "hooks/useToken";
 
-const Login = () => {
+const Login = ({ setToken }: { setToken: (accessToken: string) => void }) => {
   const navigate = useNavigate();
+  const { setLoadingTrue, setLoadingFalse } = useLoading();
+  const { token } = useToken();
 
   const formik = useFormik({
     initialValues: {
@@ -26,11 +31,33 @@ const Login = () => {
       email: "",
     },
     validationSchema: loginSchema_,
-    onSubmit: (values) => {
-      console.log("👋  values:", values);
+    onSubmit: async (values) => {
+      setLoadingTrue();
+      try {
+        const { data } = await authAPI.login(values);
+        setToken(data.accessToken);
+        setLoadingFalse();
+        navigate("/");
+      } catch (error: any) {
+        setLoadingFalse();
+      }
     },
   });
-  console.log(formik.errors, "formik.errors");
+
+  const handleRegister = () => {
+    setLoadingTrue();
+    navigate("/register");
+    setLoadingFalse();
+  };
+
+  useEffect(() => {
+    if (token) {
+      setLoadingTrue();
+      navigate("/");
+      setLoadingFalse();
+    }
+  }, []);
+
   return (
     <StyleForm onSubmit={formik.handleSubmit}>
       <StyleContainer>
@@ -71,9 +98,7 @@ const Login = () => {
           </Button>
           <Question>
             <Option>Bạn không có tài khoản?</Option>
-            <LinkAuth onClick={() => navigate("/register")}>
-              Đăng ký
-            </LinkAuth>
+            <LinkAuth onClick={handleRegister}>Đăng ký</LinkAuth>
           </Question>
         </div>
       </StyleContainer>

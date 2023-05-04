@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Button, Select } from "antd";
+import React, { useEffect, useState } from "react";
+import { Button, Select, DatePicker } from "antd";
 import {
   StyleContainer,
   StyleTitle,
@@ -13,18 +13,55 @@ import {
   EyeInvisibleOutlined,
   EyeTwoTone,
   GooglePlusOutlined,
+  PhoneOutlined,
+  TagOutlined,
 } from "@ant-design/icons";
 import { useFormik } from "formik";
 import { StyleError } from "styles/styleCommon";
 import { registerSchema } from "../../../../validations/registerSchema";
+import { useLoading } from "contexts/LoadingContext";
+import { useNavigate } from "react-router-dom";
+import authAPI from "services/authAPI";
+import useToken from "hooks/useToken";
+import type { DatePickerProps } from "antd";
 
-const provinceData = ["User", "Shipper"];
+enum ROLE {
+  USER = 'user',
+  SHIPPER = 'shipper'
+}
+
+enum GENDER {
+  MALE = "Nam",
+  FEMALE = "Nữ",
+  OTHER= "Khác"
+}
+
+
+const roleArr  = ["user", "shipper"];
+
+const genderArr = ["Nam", "Nữ", "Khác"];
 
 const Register = () => {
-  const [rule, setRule] = useState("");
+  const [role, setRole] = useState(ROLE.USER);
+  const [gender, setGender] = useState(GENDER.MALE);
+  const { setLoadingTrue, setLoadingFalse } = useLoading();
+  const navigate = useNavigate();
+  const { token } = useToken();
 
-  const handleChangeRule = (value: any) => {
-    setRule(value);
+  useEffect(() => {
+    if (token) {
+      setLoadingTrue();
+      navigate("/");
+      setLoadingFalse();
+    }
+  }, []);
+
+  const handleChangeRole = (value: any) => {
+    setRole(value);
+  };
+
+  const handleChangeGender = (value: any) => {
+    setGender(value);
   };
 
   const formik = useFormik({
@@ -33,15 +70,32 @@ const Register = () => {
       email: "",
       password: "",
       confirmPassword: "",
-      rule: rule,
+      role: ROLE.USER,
+      phoneNumber: "",
+      address: "",
+      gender: GENDER.MALE,
     },
     validationSchema: registerSchema,
-    onSubmit: (values) => {
-      console.log("👋  values:", values);
+    onSubmit: async (values) => {
+      values.role  = role;
+      values.gender = gender;
+      const { confirmPassword, ...newValues } = values; // create a new object without the confirmPassword property
+      try {
+        setLoadingTrue();
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { data: token } = await authAPI.register(newValues); // use the new object to make the API call
+        setTimeout(() => {
+          navigate("/login");
+          setLoadingFalse();
+        }, 700);
+      } catch (error: any) {
+        setLoadingFalse();
+      }
     },
   });
 
-  console.log(formik.errors, "formik.errors");
+  console.log(formik.errors);
+
   return (
     <StyleForm onSubmit={formik.handleSubmit}>
       <StyleContainer>
@@ -55,7 +109,9 @@ const Register = () => {
             onChange={formik.handleChange}
             value={formik.values.fullName}
           />
-          <StyleError>{formik?.errors?.fullName}</StyleError>
+          {formik?.errors?.fullName && (
+            <StyleError>{formik?.errors?.fullName}</StyleError>
+          )}
         </StyleInput>
         <StyleInput>
           <Input
@@ -66,8 +122,47 @@ const Register = () => {
             onChange={formik.handleChange}
             value={formik.values.email}
           />
-          <StyleError>{formik?.errors?.email}</StyleError>
+          {formik?.errors?.email && (
+            <StyleError>{formik?.errors?.email}</StyleError>
+          )}
         </StyleInput>
+        <StyleInput>
+          <Input
+            size="large"
+            name="phoneNumber"
+            placeholder="Số điện thoại"
+            prefix={<PhoneOutlined />}
+            onChange={formik.handleChange}
+            value={formik.values.phoneNumber}
+          />
+          {formik.errors.phoneNumber && (
+            <StyleError>{formik?.errors?.phoneNumber}</StyleError>
+          )}
+        </StyleInput>
+        <StyleInput>
+          <Input
+            size="large"
+            name="address"
+            placeholder="Địa chỉ"
+            prefix={<TagOutlined />}
+            onChange={formik.handleChange}
+            value={formik.values.address}
+          />
+          {formik?.errors?.address && (
+            <StyleError>{formik?.errors?.address}</StyleError>
+          )}
+        </StyleInput>
+        <StyleRule>
+          Giới tính:
+          <Select
+            defaultValue={genderArr[0]}
+            style={{ width: 120 }}
+            onChange={handleChangeGender}
+            options={genderArr?.map((item) => ({
+              value: item,
+            }))}
+          />
+        </StyleRule>
         <StyleInput>
           <Input.Password
             size="large"
@@ -80,7 +175,9 @@ const Register = () => {
             onChange={formik.handleChange}
             value={formik.values.password}
           />
-          <StyleError>{formik?.errors?.password}</StyleError>
+          {formik?.errors?.password && (
+            <StyleError>{formik?.errors?.password}</StyleError>
+          )}
         </StyleInput>
         <StyleInput>
           <Input.Password
@@ -92,19 +189,20 @@ const Register = () => {
               visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
             }
             onChange={formik.handleChange}
-            value={formik.values.confirmPassword}
+            value={formik?.values?.confirmPassword}
           />
-          <StyleError>{formik?.errors?.confirmPassword}</StyleError>
+          {formik?.errors?.confirmPassword && (
+            <StyleError>{formik?.errors?.confirmPassword}</StyleError>
+          )}
         </StyleInput>
         <StyleRule>
-          Vai trò
+          Vai trò:
           <Select
-            defaultValue={provinceData[0]}
+            defaultValue={roleArr[0]}
             style={{ width: 120 }}
-            onChange={handleChangeRule}
-            options={provinceData.map((province) => ({
-              label: province,
-              value: province,
+            onChange={handleChangeRole}
+            options={roleArr.map((role) => ({
+              value: role,
             }))}
           />
         </StyleRule>

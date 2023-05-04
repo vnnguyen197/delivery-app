@@ -22,16 +22,7 @@ const StyleMenuItems = styled.ul`
   padding-inline-start: 0;
   cursor: pointer;
   padding-left: 24px;
-  &:hover {
-    opacity: 0.3;
-  }
-  color: ${(props) => props?.theme?.colors?.text};
-  li:hover {
-    color: ${(props) => props?.theme?.colors?.primary};
-  }
-  li + li {
-    margin-left: 10px;
-  }
+  gap: 24px;
 `;
 
 interface MenuItemProps {
@@ -153,8 +144,8 @@ export const IconLogout = styled(LogoutOutlined)`
 export const ListDetails = styled.div`
   display: block;
   position: absolute;
-  top: 65px;
-  right: 3%;
+  top: 70px;
+  right: 6.5%;
   font-weight: normal;
   background-color: #fff;
   color: #212529;
@@ -183,17 +174,20 @@ export const StyleAvatar = styled.div`
     padding-left: 5px;
   }
 `;
-export const AvatarDetails = styled.div``;
+export const StyleListHeader = styled.div`
+  display: flex;
+  flex-direction: row;
+  gap: 24px;
+`;
 export const Span = styled.div`
   font-size: 15px;
   font-weight: 600;
-  color: rgb(58, 67, 84);
+  color: #33303cde;
   padding: 8px;
   font-weight: bold;
-  color: #000000;
   font-size: 14px;
   white-space: nowrap;
-  width: 130px;
+  width: 140px;
   overflow: hidden;
   text-overflow: ellipsis;
 `;
@@ -227,13 +221,51 @@ export const Icons = styled.div`
 export const HeaderProfile = styled.div`
   display: flex;
   flex-direction: row;
+  justify-content: center;
+  align-items: center;
   padding: 10px;
   min-width: 170px;
-  width: 100%;
+  cursor: pointer;
+  &:hover {
+    background-color: rgb(231, 231, 231);
+  }
 `;
 export const ImageLogo = styled.img`
-  width: 170px;
-  height: 98px;
+  width: 50px;
+  height: 50px;
   object-fit: cover;
 `;
 export const StyleImages = styled.div``;
+
+export const StyleButton = styled.button`
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  margin: auto;
+  overflow: visible;
+  min-width: 136px;
+  height: 36px;
+  text-overflow: ellipsis;
+  -webkit-line-clamp: 1;
+  font-size: 14px;
+  box-sizing: border-box;
+  box-shadow: rgba(0, 0, 0, 0.09) 0px 1px 1px 0px;
+  border: 0px;
+  display: flex;
+  -webkit-box-align: center;
+  align-items: center;
+  -webkit-box-pack: center;
+  justify-content: center;
+  text-transform: capitalize;
+  outline: 0px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 400ms ease-in-out 0s;
+  border-radius: 10px;
+  background: orange;
+  color: #fff;
+  &:hover {
+    background: #fff;
+    color: orange;
+  }
+`;

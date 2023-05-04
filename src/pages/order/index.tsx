@@ -1,54 +1,52 @@
 import React from "react";
 import {
-  StyleAvatar,
   StyleButton,
   StyleContainer,
   StyleDes,
   StyleInfo,
   StyleInput,
-  StyleItemLeft,
-  StyleItemRight,
   StyleListLeft,
   StyleListRight,
   StyleProfile,
-  StyleRuleUser,
   StyleTitle,
-  StyleTitleUser,
   StyleInfoUser,
 } from "./style";
-import { Avatar, DatePicker, Input } from "antd";
+import { Input } from "antd";
 import { useFormik } from "formik";
-import { editProfileSchema_ } from "validations/profileSchema";
-import type { DatePickerProps } from "antd";
 import { StyleError } from "styles/styleCommon";
 import { addOrderSchema_ } from "validations/orderSchema";
+import { useLoading } from "contexts/LoadingContext";
+import orderAPI from "services/orderAPI";
+import { useNavigate } from "react-router-dom";
 
 const Order = () => {
-  const imgUser =
-    "https://scontent.fdad2-1.fna.fbcdn.net/v/t39.30808-1/340536787_719219749989277_7503381357964002337_n.jpg?stp=dst-jpg_p200x200&_nc_cat=108&ccb=1-7&_nc_sid=7206a8&_nc_ohc=yGxo3Uv0MLcAX8ZKaVe&_nc_ht=scontent.fdad2-1.fna&oh=00_AfAmddtxYjCTyH3aE56yb6VC0986kXY8X2f8d4k-h_kW6Q&oe=644D5AD2";
+  const { setLoadingTrue, setLoadingFalse } = useLoading();
+  const navigate = useNavigate();
 
   const formik = useFormik({
     initialValues: {
-      nameOrder: "",
-      massOrder: "",
-      detailsOrder: "",
-      sender: "",
-      phoneSender: "",
-      addressSender: "",
-      receiver: "",
-      phoneReceiver: "",
-      addressReceiver: "",
+      name: "",
+      productVolume: "",
+      description: "",
+      senderName: "",
+      senderPhone: "",
+      senderAddress: "",
+      receiverName: "",
+      receiverPhone: "",
+      receiverAddress: "",
     },
     validationSchema: addOrderSchema_,
-    onSubmit: (values) => {
-      console.log("👋  values:", values);
+    onSubmit: async (values) => {
+      setLoadingTrue();
+      try {
+        await orderAPI.createOrder(values);
+        navigate("/")
+        setLoadingFalse();
+      } catch (error: any) {
+        setLoadingFalse();
+      }
     },
   });
-  console.log(formik.errors, "formik.errors");
-
-  const onChange: DatePickerProps["onChange"] = (date, dateString) => {
-    console.log(date, dateString);
-  };
 
   return (
     <StyleContainer onSubmit={formik.handleSubmit}>
@@ -60,39 +58,41 @@ const Order = () => {
       </StyleInfo>
       <StyleProfile>
         <StyleInput style={{ width: "50%" }}>
+          <StyleInfoUser>Thông tin gói hàng</StyleInfoUser>
           <Input
             size="large"
-            name="nameOrder"
+            name="name"
             placeholder="Tên gói đơn"
             onChange={formik.handleChange}
-            value={formik.values.nameOrder}
+            value={formik.values.name}
           />
-          {formik.errors.nameOrder && (
-            <StyleError>{formik?.errors?.nameOrder}</StyleError>
+          {formik.errors.name && (
+            <StyleError>{formik?.errors?.name}</StyleError>
           )}
         </StyleInput>
         <StyleInput style={{ width: "50%" }}>
           <Input
+            type="number"
             size="large"
-            name="massOrder"
+            name="productVolume"
             placeholder="Khối lượng (gam)"
             onChange={formik.handleChange}
-            value={formik.values.massOrder}
+            value={formik.values.productVolume}
           />
-          {formik.errors.massOrder && (
-            <StyleError>{formik?.errors?.massOrder}</StyleError>
+          {formik.errors.productVolume && (
+            <StyleError>{formik?.errors?.productVolume}</StyleError>
           )}
         </StyleInput>
         <StyleInput style={{ width: "50%" }}>
           <Input
             size="large"
-            name="detailsOrder"
+            name="description"
             placeholder="Chi tiết gói hàng"
             onChange={formik.handleChange}
-            value={formik.values.detailsOrder}
+            value={formik.values.description}
           />
-          {formik.errors.detailsOrder && (
-            <StyleError>{formik?.errors?.detailsOrder}</StyleError>
+          {formik.errors.description && (
+            <StyleError>{formik?.errors?.description}</StyleError>
           )}
         </StyleInput>
         <StyleListRight>
@@ -100,37 +100,37 @@ const Order = () => {
             <StyleInfoUser>Thông tin người gởi</StyleInfoUser>
             <Input
               size="large"
-              name="sender"
+              name="senderName"
               placeholder="Họ và tên người gởi"
               onChange={formik.handleChange}
-              value={formik.values.sender}
+              value={formik.values.senderName}
             />
-            {formik.errors.sender && (
-              <StyleError>{formik?.errors?.sender}</StyleError>
+            {formik.errors.senderName && (
+              <StyleError>{formik?.errors?.senderName}</StyleError>
             )}
           </StyleInput>
           <StyleInput>
             <Input
               size="large"
-              name="phoneSender"
+              name="senderPhone"
               placeholder="Số điện thoại"
               onChange={formik.handleChange}
-              value={formik.values.phoneSender}
+              value={formik.values.senderPhone}
             />
-            {formik.errors.phoneSender && (
-              <StyleError>{formik?.errors?.phoneSender}</StyleError>
+            {formik.errors.senderPhone && (
+              <StyleError>{formik?.errors?.senderPhone}</StyleError>
             )}
           </StyleInput>
           <StyleInput>
             <Input
               size="large"
-              name="addressSender"
+              name="senderAddress"
               placeholder="Địa chỉ"
               onChange={formik.handleChange}
-              value={formik.values.addressSender}
+              value={formik.values.senderAddress}
             />
-            {formik?.errors?.addressSender && (
-              <StyleError>{formik?.errors?.addressSender}</StyleError>
+            {formik?.errors?.senderAddress && (
+              <StyleError>{formik?.errors?.senderAddress}</StyleError>
             )}
           </StyleInput>
         </StyleListRight>
@@ -139,37 +139,37 @@ const Order = () => {
             <StyleInfoUser>Thông tin người nhận</StyleInfoUser>
             <Input
               size="large"
-              name="receiver"
+              name="receiverName"
               placeholder="Họ và tên người nhận"
               onChange={formik.handleChange}
-              value={formik.values.receiver}
+              value={formik.values.receiverName}
             />
-            {formik.errors.receiver && (
-              <StyleError>{formik?.errors?.receiver}</StyleError>
+            {formik.errors.receiverName && (
+              <StyleError>{formik?.errors?.receiverName}</StyleError>
             )}
           </StyleInput>
           <StyleInput>
             <Input
               size="large"
-              name="phoneNumber"
+              name="receiverPhone"
               placeholder="Số điện thoại"
               onChange={formik.handleChange}
-              value={formik.values.phoneReceiver}
+              value={formik.values.receiverPhone}
             />
-            {formik.errors.phoneReceiver && (
-              <StyleError>{formik?.errors?.phoneReceiver}</StyleError>
+            {formik.errors.receiverPhone && (
+              <StyleError>{formik?.errors?.receiverPhone}</StyleError>
             )}
           </StyleInput>
           <StyleInput>
             <Input
               size="large"
-              name="address"
+              name="receiverAddress"
               placeholder="Địa chỉ"
               onChange={formik.handleChange}
-              value={formik.values.addressReceiver}
+              value={formik.values.receiverAddress}
             />
-            {formik?.errors?.addressReceiver && (
-              <StyleError>{formik?.errors?.addressReceiver}</StyleError>
+            {formik?.errors?.receiverAddress && (
+              <StyleError>{formik?.errors?.receiverAddress}</StyleError>
             )}
           </StyleInput>
         </StyleListLeft>

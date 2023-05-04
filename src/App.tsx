@@ -4,14 +4,19 @@ import { BrowserRouter } from "react-router-dom";
 import Routers from "./routes/index";
 import { ThemeProvider } from "styled-components";
 import { theme } from "theme";
+import { LoadingProvider } from "contexts/LoadingContext";
+import CustomLoading from "components/Loading";
 
 function App() {
   return (
-    <ThemeProvider theme={theme}>
-      <BrowserRouter>
-        <Routers />
-      </BrowserRouter>
-    </ThemeProvider>
+    <LoadingProvider>
+      <CustomLoading />
+      <ThemeProvider theme={theme}>
+        <BrowserRouter>
+          <Routers />
+        </BrowserRouter>
+      </ThemeProvider>
+    </LoadingProvider>
   );
 }
 

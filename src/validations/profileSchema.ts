@@ -4,7 +4,6 @@ import * as yup from "yup";
 export const editProfileSchema_ = yup.object().shape({
   fullName: yup
     .string()
-    .required("Họ và tên không được để trống")
     .max(50, "Họ và tên tối đa là 50 ký tự")
     .min(3, "Họ và tên tối thiểu là 3 ký tự")
     .matches(
@@ -14,7 +13,6 @@ export const editProfileSchema_ = yup.object().shape({
   email: yup
     .string()
     .email("Email không hợp lệ")
-    .required("Email không được để trống")
     .max(40, "Email tối đa 40 ký tự")
     .min(8, "Email tối thiểu 8 ký tự")
     .matches(/^[\w.]+@([\w]+\.)+[\w]{2,4}$/g, "Email không hợp lệ"),
@@ -33,18 +31,16 @@ export const editProfileSchema_ = yup.object().shape({
       VALIDATE_STRING_CITIZEN_ID,
       "Căn cước công dân hoặc chứng minh nhân dân không hợp lệ"
     ),
-  dateCitizen: yup
-    .string()
-    // .test(
-    //   "registrationDate",
-    //   "Ngày cấp phải nhỏ hơn hoặc bằng ngày hiện tại",
-    //   function (value: any) {
-    //     return new Date(value) <= new Date();
-    //   }
-    // )
-    ,
-
+  dateCitizen: yup.string(),
+  // .test(
+  //   "registrationDate",
+  //   "Ngày cấp phải nhỏ hơn hoặc bằng ngày hiện tại",
+  //   function (value: any) {
+  //     return new Date(value) <= new Date();
+  //   }
+  // )
   addressCitizen: yup.string(),
   address: yup.string(),
-  dateOfBirth: yup.string(),
+  citizenDate: yup.string(),
+  birthday: yup.string(),
 });

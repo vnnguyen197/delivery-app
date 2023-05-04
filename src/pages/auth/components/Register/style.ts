@@ -15,11 +15,11 @@ export const StyleForm = styled.form`
 `;
 
 export const StyleContainer = styled.div`
-  padding: 40px 50px;
+  padding: 60px 100px;
   margin: 40px auto;
   text-align: center;
   width: 100%;
-  max-width: 350px;
+  max-width: 400px;
   display: flex;
   flex-direction: column;
   gap: 24px;

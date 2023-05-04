@@ -27,3 +27,12 @@ export const StyleDes = styled.h1`
 export const StyleContent = styled.div`
   padding: 24px 0;
 `;
+
+export const StyleContentOrder = styled.div`
+  box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
+  margin-bottom: 24px;
+  padding: 12px;
+`;
+export const StyleContentTitle = styled.h3``;
+export const StyleContentDetails = styled.p``;
+export const StyleContentSender = styled.div``;
