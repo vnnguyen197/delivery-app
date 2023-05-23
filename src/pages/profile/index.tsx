@@ -1,5 +1,6 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
+  ButtonImg,
   StyleAvatar,
   StyleButton,
   StyleContainer,
@@ -16,19 +17,23 @@ import {
   StyleRuleUser,
   StyleTitle,
   StyleTitleUser,
+  InputAvatar,
 } from "./style";
-import { Avatar, DatePicker, Input, Select } from "antd";
+import { Avatar, DatePicker, Input, Select, Skeleton } from "antd";
 import { useFormik } from "formik";
 import { editProfileSchema_ } from "validations/profileSchema";
 import userAPI from "services/userAPI";
 import { useLoading } from "contexts/LoadingContext";
+import { EditTwoTone } from "@ant-design/icons";
 import dayjs, { Dayjs } from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
-import shipper from "assets/images/shipper.jpg";
-import user from "assets/images/user.png";
 import "dayjs/locale/en";
 import weekday from "dayjs/plugin/weekday";
 import localeData from "dayjs/plugin/localeData";
+import user from "assets/images/user.png";
+import { useAuthValue } from "hooks/useAuthContext";
+import { UserOutlined } from "@ant-design/icons";
+import { getURLImage } from "utils/getURLImage";
 dayjs.extend(customParseFormat); // import the locale you need
 dayjs.locale("en");
 dayjs.extend(weekday);
@@ -64,8 +69,17 @@ const Profile = () => {
   const [selectedDateCitizen, setSelectedDateCitizen] = useState<Dayjs | null>(
     null
   );
-
+  const [showEdit, setShowEdit] = useState(false);
   const { setLoadingTrue, setLoadingFalse } = useLoading();
+  const { profile, getProfile } = useAuthValue();
+
+  const [error, setError] = useState("");
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [image, setImage] = useState(null);
+  const [statusImg, setStatusImg] = useState<string>("none");
+  const [url, setUrl] = useState("");
+  const inputRef = useRef<HTMLInputElement>();
+  console.log("👋  inputRef:", inputRef);
 
   const handleChangeGender = (value: any) => {
     setGender(value);
@@ -94,6 +108,7 @@ const Profile = () => {
 
   const initialValues = useMemo(() => {
     return {
+      fullName: data?.fullName || "",
       email: data?.email || "",
       birthday: data?.birthday || undefined,
       citizenId: data?.citizenId || "",
@@ -119,12 +134,48 @@ const Profile = () => {
       setLoadingTrue();
       try {
         await userAPI.editUSer(newValues);
+        getProfile();
+        setShowEdit(false);
         setLoadingFalse();
       } catch (error: any) {
         setLoadingFalse();
       }
     },
   });
+
+  const handleImageChange = async (e: any) => {
+    const file = e.target.files[0];
+    const MAX_FILE_SIZE = 5; //limit upload avatar 5MB
+    const imageMimeType = /image\/(png|jpg|jpeg)/i;
+    let image;
+    if (file) {
+      const fileSizeKiloBytes = file?.size / Math.pow(1024, 2) + 0.05;
+      if (fileSizeKiloBytes > MAX_FILE_SIZE) {
+        setError("Kích thước ảnh tối đa là 5MB");
+        return;
+      }
+      if (!file?.type.match(imageMimeType)) {
+        setError("Ảnh không đúng định dạng");
+        return;
+      }
+      setError("");
+      image = e.target.files[0];
+      setImage(image);
+      setStatusImg("loading");
+    }
+
+    const urlAvatar = await getURLImage(image, "avatar");
+    if (urlAvatar) {
+      setUrl(urlAvatar as any);
+      await userAPI.editUSer({
+        avatar: urlAvatar,
+      });
+      getProfile();
+      setStatusImg("");
+    } else {
+      setError("Lỗi ảnh");
+    }
+  };
 
   return (
     <StyleContainer onSubmit={formik.handleSubmit}>
@@ -135,12 +186,54 @@ const Profile = () => {
       <StyleProfile>
         <StyleListLeft>
           <StyleAvatar>
-            <Avatar
-              src={data?.role === "user" ? user : shipper}
-              style={{ width: 120, height: 120 }}
+            <ButtonImg
+              onClick={() => {
+                if (!showEdit) {
+                  inputRef.current?.click();
+                }
+              }}
+            >
+              {statusImg === "loading" && (
+                <Skeleton.Avatar
+                  active
+                  size="small"
+                  style={{ width: 115, height: 115 }}
+                />
+              )}
+              {statusImg !== "loading" && (
+                <Avatar
+                  src={url ? url : data?.avatar ? data?.avatar : user}
+                  style={{ width: 115, height: 115 }}
+                  icon={<UserOutlined />}
+                />
+              )}
+            </ButtonImg>
+            <InputAvatar
+              type="file"
+              onChange={handleImageChange}
+              style={{ display: "none" }}
+              ref={inputRef as any}
             />
           </StyleAvatar>
-          <StyleTitleUser>{data?.fullName}</StyleTitleUser>
+          {error && (
+            <StyleError style={{ paddingLeft: "0" }}>{error}</StyleError>
+          )}
+          <StyleTitleUser>
+            {profile?.fullName}
+            <EditTwoTone
+              style={{ paddingLeft: "8px" }}
+              onClick={() => setShowEdit(!showEdit)}
+            />
+          </StyleTitleUser>
+          {showEdit ? (
+            <Input
+              size="large"
+              style={{ width: "70%" }}
+              name="fullName"
+              onChange={formik?.handleChange}
+              value={formik?.values?.fullName}
+            />
+          ) : null}
           <StyleRuleUser>Rule : {data?.role}</StyleRuleUser>
         </StyleListLeft>
         <StyleListRight>

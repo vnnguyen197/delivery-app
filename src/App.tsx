@@ -6,17 +6,20 @@ import { ThemeProvider } from "styled-components";
 import { theme } from "theme";
 import { LoadingProvider } from "contexts/LoadingContext";
 import CustomLoading from "components/Loading";
+import { AuthProvider } from "hooks/useAuthContext";
 
 function App() {
   return (
-    <LoadingProvider>
-      <CustomLoading />
-      <ThemeProvider theme={theme}>
-        <BrowserRouter>
-          <Routers />
-        </BrowserRouter>
-      </ThemeProvider>
-    </LoadingProvider>
+    <AuthProvider>
+      <LoadingProvider>
+        <CustomLoading />
+        <ThemeProvider theme={theme}>
+          <BrowserRouter>
+            <Routers />
+          </BrowserRouter>
+        </ThemeProvider>
+      </LoadingProvider>
+    </AuthProvider>
   );
 }
 

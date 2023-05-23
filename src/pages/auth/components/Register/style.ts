@@ -15,11 +15,11 @@ export const StyleForm = styled.form`
 `;
 
 export const StyleContainer = styled.div`
-  padding: 60px 100px;
+  padding: 60px;
   margin: 40px auto;
   text-align: center;
   width: 100%;
-  max-width: 400px;
+  max-width: 530px;
   display: flex;
   flex-direction: column;
   gap: 24px;
@@ -34,6 +34,10 @@ export const StyleInput = styled.div`
   flex-direction: column;
 `;
 
+export const StyleWaiting = styled.span`
+padding-top: 8px;
+font-size: 10px;
+`
 export const StyleRule = styled.div`
   display: flex;
   flex-direction: row;

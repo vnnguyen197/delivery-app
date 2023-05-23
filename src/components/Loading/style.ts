@@ -7,7 +7,7 @@ export const StyleLoading = styled.div`
   right: 0;
   bottom: 0;
   z-index: 999999;
-  background-color: rgba(0, 0, 0, 0.6);
+  background-color: rgba(0, 0, 0, 0.8);
   display: flex;
   align-items: center;
   justify-content: center;

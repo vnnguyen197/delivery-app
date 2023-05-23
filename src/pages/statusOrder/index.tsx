@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Tabs } from "antd";
-import type { TabsProps } from "antd";
+import { Alert, Button, Modal, Tabs } from "antd";
 import {
   StyleContainer,
   StyleDes,
@@ -11,55 +10,255 @@ import {
   StyleContentTitle,
   StyleContentDetails,
   StyleContentSender,
+  StyleButton,
+  StyleOrder,
+  StyleErrorPopup,
+  StyleTitleEmpty,
+  StyleEmptyOrder,
+  StyleDetailTitle,
+  StyleDetailSubTitle,
+  StyleInfoUser,
+  StyleModal,
+  StyleContentCenter,
 } from "./style";
 import orderAPI from "services/orderAPI";
-
-const onChange = (key: string) => {
-  console.log(key);
-};
+import { useAuthValue } from "hooks/useAuthContext";
+import { useLoading } from "contexts/LoadingContext";
+import empty from "assets/images/empty_result.svg";
 
 const StatusOrder: React.FC = () => {
-  const [data, setData] = useState([]);
+  const [dataAll, setDataAll] = useState([]);
+  const [dataDetails, setDataDetails] = useState<any>([]);
+  const [dataOrderWaiting, setDataOrderWaiting] = useState<any>([]);
+  const [dataChangeStatus, setDataChangeStatus] = useState([]);
+  const [status, setStatus] = useState("WAITING");
+  const [idOrder, setIdOrder] = useState("");
+  const [isCheckError, setIsCheckError] = useState(false);
+  const { setLoadingTrue, setLoadingFalse } = useLoading();
+  const { profile } = useAuthValue();
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const filteredData = data?.filter((item: any) => item.status === "WAITING");
+  const onChange = (key: string) => {
+    setStatus(key);
+  };
 
-  const items: any = [
-    {
-      key: "1",
-      label: `Chờ xác nhận`,
-      children: filteredData?.map((item: any) => (
-        <StyleContentOrder>
-          <StyleContentTitle>{item?.name}</StyleContentTitle>
-          <StyleContentDetails>mô tả: {item?.description}</StyleContentDetails>
-          <StyleContentSender>người gởi: {item?.senderName}</StyleContentSender>
-        </StyleContentOrder>
-      )),
-    },
-    {
-      key: "2",
-      label: `Đang giao`,
-      children: `Content of Đang giao`,
-    },
-    {
-      key: "3",
-      label: `Hoàn thành`,
-      children: `Content of Hoàn thành`,
-    },
-    {
-      key: "4",
-      label: `Đã hủy`,
-      children: `Content of Đã hủy`,
-    },
-  ];
+  const handleChangeStatus = async (id: any, status: any) => {
+    setLoadingTrue();
+    try {
+      await orderAPI.updateOrder(id, { status });
+      setLoadingFalse();
+      fetchDataOrder();
+    } catch (error: any) {
+      setLoadingFalse();
+      setIsCheckError(true);
+    }
+  };
 
   const fetchDataOrder = async () => {
-    const listDataOrder = await orderAPI.getOrders();
-    setData(listDataOrder?.data?.rows);
+    const dataOrderStatus = await orderAPI.getOrderStatus(status);
+    const dataOrdersAll = await orderAPI.getOrdersAll();
+    setDataAll(dataOrdersAll?.data?.rows);
+    setDataChangeStatus(dataOrderStatus?.data?.rows);
+  };
+
+  const fetchDataOrderDetail = async () => {
+    const dataDetailOrder = await orderAPI.getOrderDetail(idOrder);
+    setDataDetails(dataDetailOrder?.data);
+  };
+
+  const fetchDataOrderWaiting = async () => {
+    const dataDetailOrderWaiting = await orderAPI.getOrderWaiting();
+    setDataOrderWaiting(dataDetailOrderWaiting?.data?.rows);
   };
 
   useEffect(() => {
     fetchDataOrder();
-  }, []);
+    fetchDataOrderWaiting()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [status]);
+
+  useEffect(() => {
+    fetchDataOrderDetail();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [idOrder]);
+
+  const showModal = (id: any) => {
+    setIsModalOpen(true);
+    setIdOrder(id);
+  };
+
+  const filterCountWaiting = dataAll?.filter(
+    (item: any) => item?.status === "WAITING"
+  );
+
+  const filterCountShipping = dataAll?.filter(
+    (item: any) => item?.status === "SHIPPING"
+  );
+
+  const filterCountDone = dataAll?.filter(
+    (item: any) => item?.status === "DONE"
+  );
+
+  const filterCountCancel = dataAll?.filter(
+    (item: any) => item?.status === "CANCEL"
+  );
+
+  const handleOk = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
+
+  const items: any = [
+    {
+      key: "WAITING",
+      label:
+        profile?.role === "user"
+          ? `Đơn chờ xác nhận (${filterCountWaiting.length})`
+          : `Đơn chưa nhận (${dataOrderWaiting.length})`,
+      children:
+        dataChangeStatus.length !== 0 ? (
+          dataChangeStatus?.map((item: any) => (
+            <StyleOrder>
+              <StyleContentOrder onClick={() => showModal(item?.id)}>
+                <StyleContentTitle>{item?.name}</StyleContentTitle>
+                <StyleContentDetails>
+                  mô tả: {item?.description}
+                </StyleContentDetails>
+                <StyleContentSender>
+                  người gởi: {item?.senderName}
+                </StyleContentSender>
+              </StyleContentOrder>
+              {profile?.role === "shipper" ? (
+                <StyleButton
+                  onClick={() =>
+                    handleChangeStatus(
+                      item?.id,
+                      item?.status === "WAITING" ? "SHIPPING" : null
+                    )
+                  }
+                >
+                  Nhận đơn hàng
+                </StyleButton>
+              ) : profile?.role === "user" ? (
+                <StyleButton
+                  onClick={() =>
+                    handleChangeStatus(
+                      item?.id,
+                      item?.status === "WAITING" ? "CANCEL" : null
+                    )
+                  }
+                >
+                  Hủy đơn hàng
+                </StyleButton>
+              ) : null}
+            </StyleOrder>
+          ))
+        ) : (
+          <StyleEmptyOrder>
+            <img src={empty} alt="empty order" width={400} height={400} />
+            <StyleTitleEmpty>Không có đơn hàng hiển thị</StyleTitleEmpty>
+          </StyleEmptyOrder>
+        ),
+    },
+    {
+      key: "SHIPPING",
+      label:
+        profile?.role === "user"
+          ? `Đơn đang giao (${filterCountShipping.length})`
+          : `Đơn đang giao (${filterCountShipping.length})`,
+      children:
+        dataChangeStatus.length !== 0 ? (
+          dataChangeStatus?.map((item: any) => (
+            <StyleOrder>
+              <StyleContentOrder onClick={() => showModal(item?.id)}>
+                <StyleContentTitle>{item?.name}</StyleContentTitle>
+                <StyleContentDetails>
+                  mô tả: {item?.description}
+                </StyleContentDetails>
+                <StyleContentSender>
+                  người gởi: {item?.senderName}
+                </StyleContentSender>
+              </StyleContentOrder>
+              {profile?.role === "user" ? (
+                <StyleButton
+                  onClick={() =>
+                    handleChangeStatus(
+                      item?.id,
+                      item?.status === "SHIPPING" ? "DONE" : null
+                    )
+                  }
+                >
+                  Đã nhận hàng
+                </StyleButton>
+              ) : null}
+            </StyleOrder>
+          ))
+        ) : (
+          <StyleEmptyOrder>
+            <img src={empty} alt="empty order" width={400} height={400} />
+            <StyleTitleEmpty>Không có đơn hàng hiển thị</StyleTitleEmpty>
+          </StyleEmptyOrder>
+        ),
+    },
+    {
+      key: "DONE",
+      label:
+        profile?.role === "user"
+          ? `Đơn hoàn thành (${filterCountDone.length})`
+          : `Đơn đã giao (${filterCountDone.length})`,
+      children:
+        dataChangeStatus.length !== 0 ? (
+          dataChangeStatus?.map((item: any) => (
+            <StyleOrder>
+              <StyleContentOrder onClick={() => showModal(item?.id)}>
+                <StyleContentTitle>{item?.name}</StyleContentTitle>
+                <StyleContentDetails>
+                  mô tả: {item?.description}
+                </StyleContentDetails>
+                <StyleContentSender>
+                  người gởi: {item?.senderName}
+                </StyleContentSender>
+              </StyleContentOrder>
+            </StyleOrder>
+          ))
+        ) : (
+          <StyleEmptyOrder>
+            <img src={empty} alt="empty order" width={400} height={400} />
+            <StyleTitleEmpty>Không có đơn hàng hiển thị</StyleTitleEmpty>
+          </StyleEmptyOrder>
+        ),
+    },
+    profile?.role === "user"
+      ? {
+          key: "CANCEL",
+          label: `Đơn đã hủy (${filterCountCancel.length})`,
+          children:
+            dataChangeStatus.length !== 0 ? (
+              dataChangeStatus?.map((item: any) => (
+                <StyleOrder>
+                  <StyleContentOrder onClick={() => showModal(item?.id)}>
+                    <StyleContentTitle>{item?.name}</StyleContentTitle>
+                    <StyleContentDetails>
+                      mô tả: {item?.description}
+                    </StyleContentDetails>
+                    <StyleContentSender>
+                      người gởi: {item?.senderName}
+                    </StyleContentSender>
+                  </StyleContentOrder>
+                </StyleOrder>
+              ))
+            ) : (
+              <StyleEmptyOrder>
+                <img src={empty} alt="empty order" width={400} height={400} />
+                <StyleTitleEmpty>Không có đơn hàng hiển thị</StyleTitleEmpty>
+              </StyleEmptyOrder>
+            ),
+        }
+      : null,
+  ];
 
   return (
     <StyleContainer>
@@ -69,14 +268,97 @@ const StatusOrder: React.FC = () => {
           Trạng thái giao hàng liên quan đến việc vận chuyển của đơn hàng
         </StyleDes>
       </StyleInfo>
+      {isCheckError ? (
+        <StyleErrorPopup>
+          <Alert
+            message="Không thể nhận đơn hàng"
+            description="Bạn đang có đơn hàng ở trạng thái đang giao nên không thể nhận đơn hàng này được!"
+            type="error"
+            showIcon
+            action={
+              <Button size="small" onClick={() => setIsCheckError(false)}>
+                Đóng
+              </Button>
+            }
+          />
+        </StyleErrorPopup>
+      ) : null}
       <StyleContent>
-        <Tabs
-          size="large"
-          defaultActiveKey="1"
-          items={items}
-          onChange={onChange}
-        />
+        <Tabs size="large" items={items} onChange={onChange} />
       </StyleContent>
+      <Modal
+        centered
+        title="CHI TIẾT GÓI HÀNG"
+        open={isModalOpen}
+        onOk={handleOk}
+        onCancel={handleCancel}
+        width={700}
+      >
+        <StyleModal>
+          <StyleInfoUser>Thông tin gói hàng</StyleInfoUser>
+          <StyleContentCenter>
+            <StyleDetailSubTitle>
+              Tên gói hàng:
+              <StyleDetailTitle>{dataDetails?.name}</StyleDetailTitle>
+            </StyleDetailSubTitle>
+            <StyleDetailSubTitle>
+              Khối lượng(gam):
+              <StyleDetailTitle>
+                {dataDetails?.productVolume}
+              </StyleDetailTitle>
+            </StyleDetailSubTitle>
+
+            <StyleDetailSubTitle>
+              Chi tiết gói hàng:
+              <StyleDetailTitle>
+                {dataDetails?.description}
+              </StyleDetailTitle>
+            </StyleDetailSubTitle>
+          </StyleContentCenter>
+          <StyleContentCenter>
+            <StyleInfoUser>Thông tin người gởi</StyleInfoUser>
+            <StyleDetailSubTitle>
+              Họ và tên người gởi:
+              <StyleDetailTitle>
+                {dataDetails?.senderName}
+              </StyleDetailTitle>
+            </StyleDetailSubTitle>
+            <StyleDetailSubTitle>
+              SĐT người gởi:
+              <StyleDetailTitle>
+                {dataDetails?.senderPhone}
+              </StyleDetailTitle>
+            </StyleDetailSubTitle>
+            <StyleDetailSubTitle>
+              Địa chỉ người gởi:
+              <StyleDetailTitle>
+                {dataDetails?.senderAddress}
+              </StyleDetailTitle>
+            </StyleDetailSubTitle>
+          </StyleContentCenter>
+          <StyleContentCenter>
+            <StyleInfoUser>Thông tin người nhận</StyleInfoUser>
+            <StyleDetailSubTitle>
+              Họ và tên người nhận:
+              <StyleDetailTitle>
+                {dataDetails?.receiverName}
+              </StyleDetailTitle>
+            </StyleDetailSubTitle>
+            <StyleDetailSubTitle>
+              SĐT người nhận:
+              <StyleDetailTitle>
+                {dataDetails?.receiverPhone}
+              </StyleDetailTitle>
+            </StyleDetailSubTitle>
+            <StyleDetailSubTitle>
+              Địa chỉ người nhận:
+              <StyleDetailTitle>
+                {dataDetails?.receiverAddress}
+              </StyleDetailTitle>
+            </StyleDetailSubTitle>
+          </StyleContentCenter>
+        </StyleModal>
+      </Modal>
     </StyleContainer>
   );
 };

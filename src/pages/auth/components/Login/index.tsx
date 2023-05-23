@@ -8,6 +8,7 @@ import {
   Question,
   Option,
   LinkAuth,
+  StyleForgotPass,
 } from "./style";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import { Input } from "antd";
@@ -19,11 +20,13 @@ import { useNavigate } from "react-router-dom";
 import { useLoading } from "contexts/LoadingContext";
 import authAPI from "services/authAPI";
 import useToken from "hooks/useToken";
+import { useAuthValue } from "hooks/useAuthContext";
 
 const Login = ({ setToken }: { setToken: (accessToken: string) => void }) => {
   const navigate = useNavigate();
   const { setLoadingTrue, setLoadingFalse } = useLoading();
   const { token } = useToken();
+  const { getProfile } = useAuthValue()
 
   const formik = useFormik({
     initialValues: {
@@ -36,6 +39,7 @@ const Login = ({ setToken }: { setToken: (accessToken: string) => void }) => {
       try {
         const { data } = await authAPI.login(values);
         setToken(data.accessToken);
+        getProfile()
         setLoadingFalse();
         navigate("/");
       } catch (error: any) {
@@ -86,7 +90,9 @@ const Login = ({ setToken }: { setToken: (accessToken: string) => void }) => {
             value={formik.values.password}
           />
           <StyleError>{formik?.errors?.password}</StyleError>
+          <StyleForgotPass onClick={()=> navigate("/forgot")}>Quên mật khẩu?</StyleForgotPass>
         </StyleInput>
+        
         <div>
           <Button
             type="primary"

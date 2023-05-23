@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Button, Select, DatePicker } from "antd";
+import { Button, Select } from "antd";
 import {
   StyleContainer,
   StyleTitle,
   StyleInput,
   StyleForm,
   StyleRule,
+  StyleWaiting,
 } from "./style";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import { Input } from "antd";
@@ -23,21 +24,19 @@ import { useLoading } from "contexts/LoadingContext";
 import { useNavigate } from "react-router-dom";
 import authAPI from "services/authAPI";
 import useToken from "hooks/useToken";
-import type { DatePickerProps } from "antd";
 
 enum ROLE {
-  USER = 'user',
-  SHIPPER = 'shipper'
+  USER = "user",
+  SHIPPER = "shipper",
 }
 
 enum GENDER {
   MALE = "Nam",
   FEMALE = "Nữ",
-  OTHER= "Khác"
+  OTHER = "Khác",
 }
 
-
-const roleArr  = ["user", "shipper"];
+const roleArr = ["user", "shipper"];
 
 const genderArr = ["Nam", "Nữ", "Khác"];
 
@@ -77,7 +76,7 @@ const Register = () => {
     },
     validationSchema: registerSchema,
     onSubmit: async (values) => {
-      values.role  = role;
+      values.role = role;
       values.gender = gender;
       const { confirmPassword, ...newValues } = values; // create a new object without the confirmPassword property
       try {
@@ -93,8 +92,6 @@ const Register = () => {
       }
     },
   });
-
-  console.log(formik.errors);
 
   return (
     <StyleForm onSubmit={formik.handleSubmit}>
@@ -125,6 +122,10 @@ const Register = () => {
           {formik?.errors?.email && (
             <StyleError>{formik?.errors?.email}</StyleError>
           )}
+          <StyleWaiting>
+            *Vui lòng nhập chính xác email của bạn để tránh trường hợp xấu khi
+            quên mật khẩu
+          </StyleWaiting>
         </StyleInput>
         <StyleInput>
           <Input

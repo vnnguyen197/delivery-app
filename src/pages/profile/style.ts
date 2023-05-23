@@ -42,6 +42,7 @@ export const StyleListLeft = styled.div`
     rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
   border-radius: 30px;
   padding: 30px 0;
+  gap: 4px;
 `;
 
 export const StyleInput = styled.div`
@@ -150,4 +151,23 @@ export const StyleError = styled.p`
   font-size: 14px;
   text-align: left;
   white-space: normal;
+`;
+
+export const ButtonImg = styled.button`
+  border: none;
+  padding: 0 !important;
+  border-radius: 50%;
+  background-color: transparent;
+  cursor: pointer;
+  transition: all 200ms;
+  &:hover {
+    opacity: 0.3;
+    transform: scale(1.1);
+  }
+`
+
+export const InputAvatar = styled.input`
+  width: 200px;
+  padding-top: 10px;
+  margin: auto;
 `;

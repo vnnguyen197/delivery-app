@@ -162,18 +162,7 @@ export const ListDetails = styled.div`
     border-bottom-color: #fff;
   }
 `;
-export const StyleAvatar = styled.div`
-  position: relative;
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  height: 80px;
-  span {
-    font-weight: bold;
-    font-size: 15px;
-    padding-left: 5px;
-  }
-`;
+
 export const StyleListHeader = styled.div`
   display: flex;
   flex-direction: row;
@@ -269,3 +258,4 @@ export const StyleButton = styled.button`
     color: orange;
   }
 `;
+

@@ -28,47 +28,23 @@ export const StyleContainer = styled.div`
   background-color: rgb(255, 255, 255);
 `;
 
-export const StyleInput = styled.div``;
-
 export const StyleTitle = styled.div`
   font-weight: bold;
   height: 50px;
-  font-size: 40px;
+  font-size: 24px;
   color: rgb(0, 0, 0);
   text-transform: uppercase;
   letter-spacing: 0.1em;
 `;
 
-export const Question = styled.div`
-  font-size: 13px;
+export const StyleInput = styled.div``;
+
+export const StyleBack = styled.div`
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
   align-items: center;
-`;
-
-export const Option = styled.div`
-  color: #000000;
-  padding: 10px 0;
-`;
-
-export const LinkAuth = styled.div`
-  color: #7e1037;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  margin-left: 5px;
-  cursor: pointer;
-  transition: all 400ms ease-in-out;
-  &:hover {
-    color: red;
-  }
-`;
-
-export const StyleForgotPass = styled.div`
-  text-align: right;
-  color: rgb(110, 150, 237);
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  font-size: 10px;
+  gap: 8px;
+  color: #33303cad;
   cursor: pointer;
   transition: all 400ms ease-in-out;
   &:hover {

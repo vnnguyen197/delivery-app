@@ -13,7 +13,6 @@ import {
 import { Avatar } from "antd";
 import logo from "assets/images/home.png";
 import {
-  UserOutlined,
   LogoutOutlined,
   EditOutlined,
   SwapOutlined,
@@ -22,6 +21,8 @@ import { useNavigate } from "react-router-dom";
 import { useLoading } from "contexts/LoadingContext";
 import useToken from "hooks/useToken";
 import useOnClickOutside from "hooks/useOnClickOutside";
+import { useAuthValue } from "hooks/useAuthContext";
+import user from "assets/images/user.png";
 
 const Header = () => {
   const ref = useRef(null);
@@ -30,16 +31,15 @@ const Header = () => {
   const navigate = useNavigate();
   const { setLoadingTrue, setLoadingFalse } = useLoading();
   const { remove } = useToken();
+  const { profile, clearProfile } = useAuthValue();
 
-  const imgUser =
-    "https://scontent.fdad2-1.fna.fbcdn.net/v/t39.30808-1/340536787_719219749989277_7503381357964002337_n.jpg?stp=dst-jpg_p200x200&_nc_cat=108&ccb=1-7&_nc_sid=7206a8&_nc_ohc=yGxo3Uv0MLcAX8ZKaVe&_nc_ht=scontent.fdad2-1.fna&oh=00_AfAmddtxYjCTyH3aE56yb6VC0986kXY8X2f8d4k-h_kW6Q&oe=644D5AD2";
   const logout = async () => {
     setLoadingTrue();
     const timer = setTimeout(() => {
       setLoadingFalse();
       remove();
-      // eslint-disable-next-line no-restricted-globals
-      location.reload();
+      clearProfile();
+      navigate("/login");
       setIsOpen(false);
     }, 200);
     return () => clearTimeout(timer);
@@ -66,42 +66,49 @@ const Header = () => {
     setIsOpen(false);
   };
 
+  const handleNavigateHome = () => {
+    setLoadingTrue();
+    navigate("/");
+    setLoadingFalse();
+  };
+
   return (
     <StyleHeader>
-      <StyleMenuItems>
+      <StyleMenuItems onClick={handleNavigateHome}>
         <ImageLogo src={logo} alt="logo" />
-        <div style={{ color: "#fff", fontSize: "18px"}}>DELIVERY</div>
+        <div style={{ color: "#fff", fontSize: "18px" }}>DELIVERY</div>
       </StyleMenuItems>
       <StyleProfile>
         <StyleListHeader>
-          <StyleButton onClick={handleNavigateOrder}>
-            <EditOutlined />
-            Lên đơn hàng
-          </StyleButton>
+          {profile?.role === "user" ? (
+            <StyleButton onClick={handleNavigateOrder}>
+              <EditOutlined />
+              Tạo đơn hàng
+            </StyleButton>
+          ) : null}
           <StyleButton onClick={handleNavigateStatus}>
             <SwapOutlined />
             Theo dõi đơn hàng
           </StyleButton>
-          <Avatar
-            onClick={() => setIsOpen(!isOpen)}
-            src={imgUser}
-            size="large"
-            icon={<UserOutlined />}
-            style={{ color: "#fff", cursor: "pointer" }}
-          />
+            <Avatar
+              onClick={() => setIsOpen(!isOpen)}
+              src={profile?.avatar ? profile?.avatar : user}
+              size="large"
+              style={{ color: "#fff", cursor: "pointer" }}
+            />
         </StyleListHeader>
         {isOpen && (
           <ListDetails ref={ref}>
             <HeaderProfile onClick={handleNavigateProfile}>
-              <Avatar src={imgUser} />
-              <Span>Nguyen Van Nguyen</Span>
+              <Avatar src={profile?.avatar ? profile?.avatar : user} />
+              <Span>{profile?.fullName}</Span>
             </HeaderProfile>
             <HeaderProfile
               onClick={logout}
               style={{ borderTop: "1px solid rgb(239, 239, 239)" }}
             >
               <LogoutOutlined style={{ fontSize: "26px", color: "#08c" }} />
-              <Span style={{color: 'red'}}>Đăng xuất</Span>
+              <Span style={{ color: "red" }}>Đăng xuất</Span>
             </HeaderProfile>
           </ListDetails>
         )}

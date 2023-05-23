@@ -9,20 +9,30 @@ import Profile from "pages/profile";
 import Order from "pages/order";
 import StatusOrder from "pages/statusOrder";
 import useToken from "hooks/useToken";
+import { useAuthValue } from "hooks/useAuthContext";
+import { ForgotPass } from "pages/auth/components/ForgotPass";
+import { SendOpt } from "pages/auth/components/ForgotPass/SendOpt";
+import { ResetPass } from "pages/auth/components/ForgotPass/ResetPass";
 
 export default function Routers() {
   const { setToken } = useToken();
+  const { profile } = useAuthValue();
 
   return (
     <Routes>
       <Route path="/" element={<PrivateRoute layout={LayoutType?.basic} />}>
         <Route path="/profile" element={<Profile />} />
-        <Route path="/order" element={<Order />} />
+        {profile?.role === "user" ? (
+          <Route path="/order" element={<Order />} />
+        ) : null}
         <Route path="/" element={<StatusOrder />} />
       </Route>
       <Route path="/" element={<DefaultRoute layout={LayoutType.blank} />}>
         <Route path="/login" element={<Login setToken={setToken} />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/forgot" element={<ForgotPass />} />
+        <Route path="/send-otp" element={<SendOpt />} />
+        <Route path="/reset-password" element={<ResetPass />} />
       </Route>
     </Routes>
   );
