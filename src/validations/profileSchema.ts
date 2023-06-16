@@ -8,7 +8,7 @@ export const editProfileSchema_ = yup.object().shape({
     .min(3, "Họ và tên tối thiểu là 3 ký tự")
     .matches(
       VALIDATE_STRING_VN,
-      "Họ và tên bao gồm chữ, space tối thiểu 3 ký tự, tối đa 50 ký tự"
+      "Họ và tên chỉ bao gồm chữ"
     ),
   email: yup
     .string()

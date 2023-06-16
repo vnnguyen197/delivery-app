@@ -11,7 +11,7 @@ import StatusOrder from "pages/statusOrder";
 import useToken from "hooks/useToken";
 import { useAuthValue } from "hooks/useAuthContext";
 import { ForgotPass } from "pages/auth/components/ForgotPass";
-import { SendOpt } from "pages/auth/components/ForgotPass/SendOpt";
+import { SendOTP } from "pages/auth/components/ForgotPass/SendOTP";
 import { ResetPass } from "pages/auth/components/ForgotPass/ResetPass";
 
 export default function Routers() {
@@ -31,7 +31,7 @@ export default function Routers() {
         <Route path="/login" element={<Login setToken={setToken} />} />
         <Route path="/register" element={<Register />} />
         <Route path="/forgot" element={<ForgotPass />} />
-        <Route path="/send-otp" element={<SendOpt />} />
+        <Route path="/send-otp" element={<SendOTP />} />
         <Route path="/reset-password" element={<ResetPass />} />
       </Route>
     </Routes>

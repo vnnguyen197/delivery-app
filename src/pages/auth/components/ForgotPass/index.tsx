@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   StyleBack,
   StyleContainer,
@@ -13,10 +13,12 @@ import { ForgotPassSchema_ } from "validations/forgotPassSchema";
 import { useLoading } from "contexts/LoadingContext";
 import { useNavigate } from "react-router-dom";
 import { StyleError } from "styles/styleCommon";
+import authAPI from "services/authAPI";
 
 export const ForgotPass = () => {
   const navigate = useNavigate();
   const { setLoadingTrue, setLoadingFalse } = useLoading();
+  const [error, setError] = useState("")
 
   const formik = useFormik({
     initialValues: {
@@ -24,19 +26,15 @@ export const ForgotPass = () => {
     },
     validationSchema: ForgotPassSchema_,
     onSubmit: async (values) => {
-      console.log("👋  values:", values);
       setLoadingTrue();
-      setLoadingFalse();
-      navigate("/send-otp");
-      //   try {
-      //     const { data } = await authAPI.login(values);
-      //     setToken(data.accessToken);
-      //     getProfile()
-      //     setLoadingFalse();
-      //     navigate("/");
-      //   } catch (error: any) {
-      //     setLoadingFalse();
-      //   }
+      try {
+        await authAPI.sendOTP(values);
+        setLoadingFalse();
+        navigate("/send-otp");
+      } catch (error: any) {
+        setLoadingFalse();
+        setError("Email của bạn không tồn tại")
+      }
     },
   });
 
@@ -45,7 +43,9 @@ export const ForgotPass = () => {
       <StyleContainer>
         <div>
           <StyleTitle>Bạn quên mật khẩu?</StyleTitle>
-          <span style={{fontSize: "10px"}}>Nhập email của bạn để tiến hành lấy lại mật khẩu</span>
+          <span style={{ fontSize: "10px" }}>
+            Nhập email của bạn để tiến hành lấy lại mật khẩu
+          </span>
         </div>
         <StyleInput>
           <Input
@@ -56,7 +56,7 @@ export const ForgotPass = () => {
             onChange={formik.handleChange}
             value={formik.values.email}
           />
-          <StyleError>{formik?.errors?.email}</StyleError>
+          <StyleError>{formik?.errors?.email || error}</StyleError>
         </StyleInput>
         <Button
           type="primary"

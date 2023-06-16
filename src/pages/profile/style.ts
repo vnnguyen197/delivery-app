@@ -54,7 +54,7 @@ export const StyleInput = styled.div`
 `;
 
 export const StyleLabel = styled.label`
-  width: 20%;
+  width: 30%;
   color: rgba(51, 48, 60, 0.87);
 `;
 

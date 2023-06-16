@@ -1,8 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button, Input } from "antd";
 import { UserOutlined, ArrowLeftOutlined } from "@ant-design/icons";
 import { useFormik } from "formik";
-import { ForgotPassSchema_ } from "validations/forgotPassSchema";
+import { schemaOTP } from "validations/forgotPassSchema";
 import { useLoading } from "contexts/LoadingContext";
 import { useNavigate } from "react-router-dom";
 import { StyleError } from "styles/styleCommon";
@@ -13,31 +13,29 @@ import {
   StyleInput,
   StyleTitle,
 } from "./style";
+import authAPI from "services/authAPI";
 
-export const SendOpt = () => {
+export const SendOTP = () => {
   const navigate = useNavigate();
   const { setLoadingTrue, setLoadingFalse } = useLoading();
+  const [error, setError] = useState("")
 
   const formik = useFormik({
     initialValues: {
       email: "",
+      otp: "",
     },
-    validationSchema: ForgotPassSchema_,
+    validationSchema: schemaOTP,
     onSubmit: async (values) => {
-      console.log("👋  values:", values);
       setLoadingTrue();
-      setLoadingFalse();
-      navigate("/reset-password");
-
-      //   try {
-      //     const { data } = await authAPI.login(values);
-      //     setToken(data.accessToken);
-      //     getProfile()
-      //     setLoadingFalse();
-      //     navigate("/");
-      //   } catch (error: any) {
-      //     setLoadingFalse();
-      //   }
+      try {
+        await authAPI.verifyOTP(values);
+        setLoadingFalse();
+        navigate("/reset-password");
+      } catch (error: any) {
+        setLoadingFalse();
+        setError("Mã OTP đã hết hạn")
+      }
     },
   });
 
@@ -45,17 +43,31 @@ export const SendOpt = () => {
     <StyleForm onSubmit={formik.handleSubmit}>
       <StyleContainer>
         <StyleTitle>xác thực tài khoản</StyleTitle>
-        <div>Mã OTP đã được gởi về  <strong>v.nnguyen0799@gmail.com</strong>, vui lòng kiểm tra email của bạn và nhập mã OTP </div>
+        <div>
+          Mã OTP đã được gởi về <strong>EMAIL của bạn</strong>, vui
+          lòng kiểm tra email của bạn và nhập mã OTP{" "}
+        </div>
         <StyleInput>
           <Input
             size="large"
             name="email"
-            placeholder="Nhập mã OTP"
+            placeholder="Nhập emai của bạn"
             prefix={<UserOutlined />}
             onChange={formik.handleChange}
             value={formik.values.email}
           />
           <StyleError>{formik?.errors?.email}</StyleError>
+        </StyleInput>
+        <StyleInput>
+          <Input
+            size="large"
+            name="otp"
+            placeholder="Nhập mã OTP"
+            prefix={<UserOutlined />}
+            onChange={formik.handleChange}
+            value={formik.values.otp}
+          />
+          <StyleError>{formik?.errors?.otp || error}</StyleError>
         </StyleInput>
         <Button
           type="primary"
@@ -63,9 +75,9 @@ export const SendOpt = () => {
           size="large"
           style={{ width: "100%" }}
         >
-         Xác thực OTP
+          Xác thực OTP
         </Button>
-        <StyleBack onClick={() => navigate("/reset-password")}>
+        <StyleBack onClick={() => navigate("/login")}>
           <ArrowLeftOutlined />
           Quay lại đăng nhập
         </StyleBack>

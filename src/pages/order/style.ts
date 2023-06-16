@@ -132,3 +132,12 @@ export const StyleButton = styled.button`
     border: 2px solid orange;
   }
 `;
+
+export const StyleRules = styled.div`
+  font-size: 14.5px;
+`
+export const StyleRulesGroup = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+`

@@ -46,7 +46,8 @@ const Register = () => {
   const { setLoadingTrue, setLoadingFalse } = useLoading();
   const navigate = useNavigate();
   const { token } = useToken();
-
+  const [error, setError] = useState("")
+  console.log("👋  error:", error)
   useEffect(() => {
     if (token) {
       setLoadingTrue();
@@ -86,9 +87,12 @@ const Register = () => {
         setTimeout(() => {
           navigate("/login");
           setLoadingFalse();
+          setError("")
         }, 700);
       } catch (error: any) {
         setLoadingFalse();
+        setError("Email đã tồn tại")
+
       }
     },
   });
@@ -119,9 +123,9 @@ const Register = () => {
             onChange={formik.handleChange}
             value={formik.values.email}
           />
-          {formik?.errors?.email && (
-            <StyleError>{formik?.errors?.email}</StyleError>
-          )}
+          {formik?.errors?.email || error ? (
+            <StyleError>{formik?.errors?.email || error}</StyleError>
+          ):null}
           <StyleWaiting>
             *Vui lòng nhập chính xác email của bạn để tránh trường hợp xấu khi
             quên mật khẩu

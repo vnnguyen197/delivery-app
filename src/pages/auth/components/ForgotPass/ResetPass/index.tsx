@@ -1,8 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button, Input } from "antd";
 import { UserOutlined, ArrowLeftOutlined } from "@ant-design/icons";
 import { useFormik } from "formik";
-import { ForgotPassSchema_ } from "validations/forgotPassSchema";
+import { resetPassword_ } from "validations/forgotPassSchema";
 import { useLoading } from "contexts/LoadingContext";
 import { useNavigate } from "react-router-dom";
 import { StyleError } from "styles/styleCommon";
@@ -13,29 +13,32 @@ import {
   StyleInput,
   StyleTitle,
 } from "./style";
+import authAPI from "services/authAPI";
 
 export const ResetPass = () => {
   const navigate = useNavigate();
   const { setLoadingTrue, setLoadingFalse } = useLoading();
+  const [error, setError] = useState("");
 
   const formik = useFormik({
     initialValues: {
       email: "",
+      password: "",
+      confirmPassword: ""
     },
-    validationSchema: ForgotPassSchema_,
+    validationSchema: resetPassword_,
     onSubmit: async (values) => {
-      console.log("👋  values:", values);
+      const { confirmPassword, ...newValues } = values; // create a new object without the confirmPassword property
+      console.log("👋  newValues:", newValues)
       setLoadingTrue();
-      setLoadingFalse();
-      //   try {
-      //     const { data } = await authAPI.login(values);
-      //     setToken(data.accessToken);
-      //     getProfile()
-      //     setLoadingFalse();
-      //     navigate("/");
-      //   } catch (error: any) {
-      //     setLoadingFalse();
-      //   }
+      try {
+        await authAPI.changePassword(newValues);
+        setLoadingFalse();
+        navigate("/login");
+      } catch (error: any) {
+        setLoadingFalse();
+        setError("Đổi mật khẩu không thành công");
+      }
     },
   });
 
@@ -47,7 +50,7 @@ export const ResetPass = () => {
           <Input
             size="large"
             name="email"
-            placeholder="Nhập mật khẩu mới"
+            placeholder="Email"
             prefix={<UserOutlined />}
             onChange={formik.handleChange}
             value={formik.values.email}
@@ -57,13 +60,24 @@ export const ResetPass = () => {
         <StyleInput>
           <Input
             size="large"
-            name="email"
+            name="password"
+            placeholder="Nhập mật khẩu mới"
+            prefix={<UserOutlined />}
+            onChange={formik.handleChange}
+            value={formik.values.password}
+          />
+          <StyleError>{formik?.errors?.password}</StyleError>
+        </StyleInput>
+        <StyleInput>
+          <Input
+            size="large"
+            name="confirmPassword"
             placeholder="Nhập lại mật khẩu mới"
             prefix={<UserOutlined />}
             onChange={formik.handleChange}
-            value={formik.values.email}
+            value={formik.values.confirmPassword}
           />
-          <StyleError>{formik?.errors?.email}</StyleError>
+          <StyleError>{formik?.errors?.confirmPassword || error}</StyleError>
         </StyleInput>
         <Button
           type="primary"
@@ -71,7 +85,7 @@ export const ResetPass = () => {
           size="large"
           style={{ width: "100%" }}
         >
-         Cập nhật mật khẩu
+          Cập nhật mật khẩu
         </Button>
         <StyleBack onClick={() => navigate("/login")}>
           <ArrowLeftOutlined />

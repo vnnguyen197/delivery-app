@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "antd";
 import {
   StyleContainer,
@@ -26,7 +26,8 @@ const Login = ({ setToken }: { setToken: (accessToken: string) => void }) => {
   const navigate = useNavigate();
   const { setLoadingTrue, setLoadingFalse } = useLoading();
   const { token } = useToken();
-  const { getProfile } = useAuthValue()
+  const { getProfile } = useAuthValue();
+  const [error, setError] = useState("");
 
   const formik = useFormik({
     initialValues: {
@@ -39,11 +40,12 @@ const Login = ({ setToken }: { setToken: (accessToken: string) => void }) => {
       try {
         const { data } = await authAPI.login(values);
         setToken(data.accessToken);
-        getProfile()
+        getProfile();
         setLoadingFalse();
         navigate("/");
       } catch (error: any) {
         setLoadingFalse();
+        setError("Tài khoản không tồn tại");
       }
     },
   });
@@ -90,9 +92,13 @@ const Login = ({ setToken }: { setToken: (accessToken: string) => void }) => {
             value={formik.values.password}
           />
           <StyleError>{formik?.errors?.password}</StyleError>
-          <StyleForgotPass onClick={()=> navigate("/forgot")}>Quên mật khẩu?</StyleForgotPass>
+          <StyleForgotPass onClick={() => navigate("/forgot")}>
+            Quên mật khẩu?
+          </StyleForgotPass>
         </StyleInput>
-        
+        {error ? (
+          <StyleError style={{ textAlign: "center" }}>{error}</StyleError>
+        ) : null}
         <div>
           <Button
             type="primary"

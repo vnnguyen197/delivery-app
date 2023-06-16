@@ -78,8 +78,8 @@ const Profile = () => {
   const [image, setImage] = useState(null);
   const [statusImg, setStatusImg] = useState<string>("none");
   const [url, setUrl] = useState("");
+  const [isCheck, setIsCheck] = useState(false);
   const inputRef = useRef<HTMLInputElement>();
-  console.log("👋  inputRef:", inputRef);
 
   const handleChangeGender = (value: any) => {
     setGender(value);
@@ -131,6 +131,7 @@ const Profile = () => {
         : undefined;
       values.birthday = selectedDate ? selectedDate : undefined;
       const { email, ...newValues } = values; // create a new object without the email; property
+      setShowEdit(true);
       setLoadingTrue();
       try {
         await userAPI.editUSer(newValues);
@@ -188,7 +189,7 @@ const Profile = () => {
           <StyleAvatar>
             <ButtonImg
               onClick={() => {
-                if (!showEdit) {
+                if ((!showEdit || formik.values) && !formik.dirty) {
                   inputRef.current?.click();
                 }
               }}
@@ -226,13 +227,18 @@ const Profile = () => {
             />
           </StyleTitleUser>
           {showEdit ? (
-            <Input
-              size="large"
-              style={{ width: "70%" }}
-              name="fullName"
-              onChange={formik?.handleChange}
-              value={formik?.values?.fullName}
-            />
+            <>
+              <Input
+                size="large"
+                style={{ width: "70%" }}
+                name="fullName"
+                onChange={formik.handleChange}
+                value={formik.values.fullName}
+              />
+              <StyleError style={{ paddingLeft: "0" }}>
+                {formik?.errors?.fullName}
+              </StyleError>
+            </>
           ) : null}
           <StyleRuleUser>Rule : {data?.role}</StyleRuleUser>
         </StyleListLeft>
