@@ -29,7 +29,6 @@ export const ResetPass = () => {
     validationSchema: resetPassword_,
     onSubmit: async (values) => {
       const { confirmPassword, ...newValues } = values; // create a new object without the confirmPassword property
-      console.log("👋  newValues:", newValues)
       setLoadingTrue();
       try {
         await authAPI.changePassword(newValues);

@@ -18,7 +18,6 @@ const CollapesedMenu: React.FC = () => {
   const { profile, clearProfile } = useAuthValue();
 
   const logout = async () => {
-    console.log("a");
     setLoadingTrue();
     const timer = setTimeout(() => {
       setLoadingFalse();

@@ -47,7 +47,6 @@ const Register = () => {
   const navigate = useNavigate();
   const { token } = useToken();
   const [error, setError] = useState("")
-  console.log("👋  error:", error)
   useEffect(() => {
     if (token) {
       setLoadingTrue();
