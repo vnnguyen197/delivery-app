@@ -25,6 +25,10 @@ const orderAPI = {
     const url = `/orders/${id}`;
     return axiosClient.patch(url, body);
   },
+  getTag: () => {
+    const url = `/tags`;
+    return axiosClient.get(url);
+  },
 };
 
 export default orderAPI;

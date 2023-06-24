@@ -164,10 +164,15 @@ export const ButtonImg = styled.button`
     opacity: 0.3;
     transform: scale(1.1);
   }
-`
+`;
 
 export const InputAvatar = styled.input`
   width: 200px;
   padding-top: 10px;
   margin: auto;
+`;
+
+export const StyleVerify = styled.div`
+  color: #4b0082;
+  font-weight: 500;
 `;

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   StyleButton,
   StyleContainer,
@@ -23,15 +23,16 @@ import { useNavigate } from "react-router-dom";
 import { Checkbox } from "antd";
 import type { CheckboxChangeEvent } from "antd/es/checkbox";
 
+const { Option } = Select;
+
 const Order = () => {
   const { setLoadingTrue, setLoadingFalse } = useLoading();
   const navigate = useNavigate();
   const [error, setError] = useState("");
+  const [tags, setTags] = useState([]);
+  const [selectedTags, setSelectedTags] = useState([]);
   const [isCheck, setIsCheck] = useState(false);
   const [isRules, setIsRules] = useState(false);
-  // const getTags = asyns() => {
-  //     const dataTag = await
-  // }
 
   const formik = useFormik({
     initialValues: {
@@ -44,10 +45,12 @@ const Order = () => {
       receiverName: "",
       receiverPhone: "",
       receiverAddress: "",
+      tags: [],
     },
     validationSchema: addOrderSchema_,
     onSubmit: async (values) => {
-      setLoadingTrue();
+      values.tags = selectedTags
+      setLoadingTrue();  
       if (!isCheck) {
         try {
           await orderAPI.createOrder(values);
@@ -87,6 +90,18 @@ const Order = () => {
     setIsCheck(false);
   };
 
+  const getTags = async () => {
+    const dataListTag = await orderAPI?.getTag();
+    setTags(dataListTag?.data);
+  };
+
+  useEffect(() => {
+    getTags();
+  }, []);
+
+  const handleChangeTags = (selectedValues: any) => {
+    setSelectedTags(selectedValues);
+  };
   return (
     <StyleContainer onSubmit={formik.handleSubmit}>
       <StyleInfo>
@@ -135,25 +150,20 @@ const Order = () => {
           )}
         </StyleInput>
         <StyleInput style={{ width: "50%" }}>
-          {/* <Input
-            size="large"
-            name="description"
-            placeholder="Các tag loại hàng"
-            onChange={formik.handleChange}
-            value={formik.values.description}
-          />
-          {formik.errors.description && (
-            <StyleError>{formik?.errors?.description}</StyleError>
-          )} */}
           <Select
             mode="multiple"
             allowClear
             style={{ width: "100%" }}
-            placeholder="Please select"
-            defaultValue={["a10", "c12"]}
-            // onChange={handleChange}
-            // options={options}
-          />
+            placeholder="Vui lòng chọn tags"
+            value={selectedTags}
+            onChange={handleChangeTags}
+          >
+            {tags.map((tag: any) => (
+              <Option key={tag.id} value={tag.id}>
+                {tag.name}
+              </Option>
+            ))}
+          </Select>
         </StyleInput>
         <StyleListRight>
           <StyleInput>

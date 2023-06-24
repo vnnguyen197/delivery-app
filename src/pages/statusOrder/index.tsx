@@ -29,6 +29,7 @@ import empty from "assets/images/empty_result.svg";
 const StatusOrder: React.FC = () => {
   const [dataAll, setDataAll] = useState([]);
   const [dataDetails, setDataDetails] = useState<any>([]);
+  console.log("👋  dataDetails:", dataDetails)
   const [dataOrderWaiting, setDataOrderWaiting] = useState<any>([]);
   const [dataChangeStatus, setDataChangeStatus] = useState([]);
   const [status, setStatus] = useState("WAITING");
@@ -57,6 +58,7 @@ const StatusOrder: React.FC = () => {
   const fetchDataOrder = async () => {
     const dataOrderStatus = await orderAPI.getOrderStatus(status);
     const dataOrdersAll = await orderAPI.getOrdersAll();
+    console.log("👋  dataOrdersAll:", dataOrdersAll)
     setDataAll(dataOrdersAll?.data?.rows);
     setDataChangeStatus(dataOrderStatus?.data?.rows);
   };
@@ -73,7 +75,7 @@ const StatusOrder: React.FC = () => {
 
   useEffect(() => {
     fetchDataOrder();
-    fetchDataOrderWaiting()
+    fetchDataOrderWaiting();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status]);
 
@@ -303,52 +305,46 @@ const StatusOrder: React.FC = () => {
             </StyleDetailSubTitle>
             <StyleDetailSubTitle>
               Khối lượng(gam):
-              <StyleDetailTitle>
-                {dataDetails?.productVolume}
-              </StyleDetailTitle>
+              <StyleDetailTitle>{dataDetails?.productVolume}</StyleDetailTitle>
             </StyleDetailSubTitle>
 
             <StyleDetailSubTitle>
               Chi tiết gói hàng:
-              <StyleDetailTitle>
-                {dataDetails?.description}
-              </StyleDetailTitle>
+              <StyleDetailTitle>{dataDetails?.description}</StyleDetailTitle>
+            </StyleDetailSubTitle>
+            <StyleDetailSubTitle>
+              Các loại tags
+              <ul>
+                {dataDetails?.tags?.map((item: any, index: number) => (
+                  <StyleDetailTitle>{index+1}. {item?.name}</StyleDetailTitle>
+                ))}
+              </ul>
             </StyleDetailSubTitle>
           </StyleContentCenter>
           <StyleContentCenter>
             <StyleInfoUser>Thông tin người gởi</StyleInfoUser>
             <StyleDetailSubTitle>
               Họ và tên người gởi:
-              <StyleDetailTitle>
-                {dataDetails?.senderName}
-              </StyleDetailTitle>
+              <StyleDetailTitle>{dataDetails?.senderName}</StyleDetailTitle>
             </StyleDetailSubTitle>
             <StyleDetailSubTitle>
               SĐT người gởi:
-              <StyleDetailTitle>
-                {dataDetails?.senderPhone}
-              </StyleDetailTitle>
+              <StyleDetailTitle>{dataDetails?.senderPhone}</StyleDetailTitle>
             </StyleDetailSubTitle>
             <StyleDetailSubTitle>
               Địa chỉ người gởi:
-              <StyleDetailTitle>
-                {dataDetails?.senderAddress}
-              </StyleDetailTitle>
+              <StyleDetailTitle>{dataDetails?.senderAddress}</StyleDetailTitle>
             </StyleDetailSubTitle>
           </StyleContentCenter>
           <StyleContentCenter>
             <StyleInfoUser>Thông tin người nhận</StyleInfoUser>
             <StyleDetailSubTitle>
               Họ và tên người nhận:
-              <StyleDetailTitle>
-                {dataDetails?.receiverName}
-              </StyleDetailTitle>
+              <StyleDetailTitle>{dataDetails?.receiverName}</StyleDetailTitle>
             </StyleDetailSubTitle>
             <StyleDetailSubTitle>
               SĐT người nhận:
-              <StyleDetailTitle>
-                {dataDetails?.receiverPhone}
-              </StyleDetailTitle>
+              <StyleDetailTitle>{dataDetails?.receiverPhone}</StyleDetailTitle>
             </StyleDetailSubTitle>
             <StyleDetailSubTitle>
               Địa chỉ người nhận:

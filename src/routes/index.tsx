@@ -13,6 +13,7 @@ import { useAuthValue } from "hooks/useAuthContext";
 import { ForgotPass } from "pages/auth/components/ForgotPass";
 import { SendOTP } from "pages/auth/components/ForgotPass/SendOTP";
 import { ResetPass } from "pages/auth/components/ForgotPass/ResetPass";
+import { PriceList } from "pages/priceList";
 
 export default function Routers() {
   const { setToken } = useToken();
@@ -26,6 +27,7 @@ export default function Routers() {
           <Route path="/order" element={<Order />} />
         ) : null}
         <Route path="/" element={<StatusOrder />} />
+        <Route path="/price-list" element={<PriceList />} />
       </Route>
       <Route path="/" element={<DefaultRoute layout={LayoutType.blank} />}>
         <Route path="/login" element={<Login setToken={setToken} />} />

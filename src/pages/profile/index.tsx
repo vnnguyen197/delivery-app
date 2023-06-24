@@ -18,8 +18,9 @@ import {
   StyleTitle,
   StyleTitleUser,
   InputAvatar,
+  StyleVerify,
 } from "./style";
-import { Avatar, DatePicker, Input, Select, Skeleton } from "antd";
+import { Avatar, Button, DatePicker, Input, Select, Skeleton } from "antd";
 import { useFormik } from "formik";
 import { editProfileSchema_ } from "validations/profileSchema";
 import userAPI from "services/userAPI";
@@ -72,13 +73,13 @@ const Profile = () => {
   const [showEdit, setShowEdit] = useState(false);
   const { setLoadingTrue, setLoadingFalse } = useLoading();
   const { profile, getProfile } = useAuthValue();
+  console.log("👋  profile:", profile);
 
   const [error, setError] = useState("");
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [image, setImage] = useState(null);
   const [statusImg, setStatusImg] = useState<string>("none");
   const [url, setUrl] = useState("");
-  const [isCheck, setIsCheck] = useState(false);
   const inputRef = useRef<HTMLInputElement>();
 
   const handleChangeGender = (value: any) => {
@@ -183,6 +184,24 @@ const Profile = () => {
       <StyleInfo>
         <StyleTitle>Thông tin cá nhân</StyleTitle>
         <StyleDes>Quản lý thông tin hồ sơ để bảo mật tài khoản</StyleDes>
+      </StyleInfo>
+      <StyleInfo style={{marginTop: "24px"}}>
+        <StyleVerify>
+          Tài khoản của bạn{" "}
+          {profile?.citizenAdd === "" ||
+          profile?.citizenId === "" ||
+          profile?.citizenDate === "" ? (
+            <>
+              <span style={{ color: "red" }}>chưa được xác thực</span>
+              <div style={{ color: "orange" }}>
+                Vui lòng xác thực tài khoản (thêm CCCD, nơi cấp, ngày cấp) để
+                chúng tôi có thể bảo vệ bạn tốt hơn
+              </div>
+            </>
+          ) : (
+            <span style={{ color: "green" }}>đã được xác thực</span>
+          )}
+        </StyleVerify>
       </StyleInfo>
       <StyleProfile>
         <StyleListLeft>

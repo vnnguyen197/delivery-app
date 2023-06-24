@@ -4,6 +4,7 @@ import {
   DesktopOutlined,
   UserOutlined,
   LogoutOutlined,
+  TableOutlined
 } from "@ant-design/icons";
 import { Menu } from "antd";
 import { Link, useNavigate } from "react-router-dom";
@@ -46,6 +47,12 @@ const CollapesedMenu: React.FC = () => {
       label: "Theo dõi đơn hàng",
       path: "/",
       icon: <ContainerOutlined />,
+    },
+    {
+      key: "5",
+      label: "Bảng giá đơn hàng",
+      path: "/price-list",
+      icon: <TableOutlined /> ,
     },
     { key: "4", label: "Đăng xuất", icon: <LogoutOutlined /> },
   ];
