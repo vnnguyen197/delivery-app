@@ -70,6 +70,12 @@ const CollapesedMenu: React.FC = () => {
       path: "/",
       icon: <ContainerOutlined />,
     },
+    {
+      key: "4",
+      label: "Bảng giá đơn hàng",
+      path: "/price-list",
+      icon: <TableOutlined /> ,
+    },
     { key: "2", label: "Đăng xuất", icon: <LogoutOutlined /> },
   ];
 

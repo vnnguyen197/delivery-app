@@ -73,7 +73,6 @@ const Profile = () => {
   const [showEdit, setShowEdit] = useState(false);
   const { setLoadingTrue, setLoadingFalse } = useLoading();
   const { profile, getProfile } = useAuthValue();
-  console.log("👋  profile:", profile);
 
   const [error, setError] = useState("");
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

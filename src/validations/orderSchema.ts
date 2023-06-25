@@ -16,13 +16,13 @@ export const addOrderSchema_ = yup.object().shape({
     ),
   senderPhone: yup
     .string()
-    .required("Số điện thoại người gởi không được để trống")
+    .required("Số điện thoại người gửi không được để trống")
     .matches(/(84|0[1|2|3|5|7|8|9])+([0-9]{8})\b/, {
       message: "Số điện thoại không hợp lệ",
       excludeEmptyString: true,
     })
     .max(10, "Số điện thoại tối đa là 10 số"),
-  senderAddress: yup.string().required("Địa chỉ người gởi không được để trống"),
+  senderAddress: yup.string().required("Địa chỉ người gửi không được để trống"),
   receiverName: yup
     .string()
     .required("Họ và tên không được để trống")

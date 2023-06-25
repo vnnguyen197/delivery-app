@@ -11,18 +11,18 @@ export const StyleInfo = styled.div`
   border-radius: 8px;
 `;
 
-export const StyleTitle = styled.h2`
-  font-size: 25px;
-  color: #333333;
-  font-weight: bold;
-  margin: 4px 0 0px 0;
-`;
+  export const StyleTitle = styled.h2`
+    font-size: 25px;
+    color: #333333;
+    font-weight: bold;
+    margin: 4px 0 0px 0;
+  `;
 
-export const StyleDes = styled.h1`
-  font-size: 14px;
-  line-height: 1.0625rem;
-  color: rgb(136, 136, 136);
-`;
+  export const StyleDes = styled.h1`
+    font-size: 14px;
+    line-height: 1.0625rem;
+    color: rgb(136, 136, 136);
+  `;
 
 export const StyleContent = styled.div`
   padding: 24px 0;

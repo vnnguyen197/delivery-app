@@ -44,7 +44,7 @@ export const SendOTP = () => {
       <StyleContainer>
         <StyleTitle>xác thực tài khoản</StyleTitle>
         <div>
-          Mã OTP đã được gởi về <strong>EMAIL của bạn</strong>, vui
+          Mã OTP đã được gửi về <strong>EMAIL của bạn</strong>, vui
           lòng kiểm tra email của bạn và nhập mã OTP{" "}
         </div>
         <StyleInput>

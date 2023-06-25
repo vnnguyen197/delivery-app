@@ -29,12 +29,12 @@ import empty from "assets/images/empty_result.svg";
 const StatusOrder: React.FC = () => {
   const [dataAll, setDataAll] = useState([]);
   const [dataDetails, setDataDetails] = useState<any>([]);
-  console.log("👋  dataDetails:", dataDetails)
   const [dataOrderWaiting, setDataOrderWaiting] = useState<any>([]);
   const [dataChangeStatus, setDataChangeStatus] = useState([]);
   const [status, setStatus] = useState("WAITING");
   const [idOrder, setIdOrder] = useState("");
   const [isCheckError, setIsCheckError] = useState(false);
+  const [isCheckVerify, setIsCheckVerify] = useState(false);
   const { setLoadingTrue, setLoadingFalse } = useLoading();
   const { profile } = useAuthValue();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -45,20 +45,28 @@ const StatusOrder: React.FC = () => {
 
   const handleChangeStatus = async (id: any, status: any) => {
     setLoadingTrue();
-    try {
-      await orderAPI.updateOrder(id, { status });
+    if (
+      profile?.citizenAdd !== "" ||
+      profile?.citizenId !== "" ||
+      profile?.citizenDate !== ""
+    ) {
+      try {
+        await orderAPI.updateOrder(id, { status });
+        setLoadingFalse();
+        fetchDataOrder();
+      } catch (error: any) {
+        setLoadingFalse();
+        setIsCheckError(true);
+      }
+    } else {
+      setIsCheckVerify(true);
       setLoadingFalse();
-      fetchDataOrder();
-    } catch (error: any) {
-      setLoadingFalse();
-      setIsCheckError(true);
     }
   };
 
   const fetchDataOrder = async () => {
     const dataOrderStatus = await orderAPI.getOrderStatus(status);
     const dataOrdersAll = await orderAPI.getOrdersAll();
-    console.log("👋  dataOrdersAll:", dataOrdersAll)
     setDataAll(dataOrdersAll?.data?.rows);
     setDataChangeStatus(dataOrderStatus?.data?.rows);
   };
@@ -130,7 +138,7 @@ const StatusOrder: React.FC = () => {
                   mô tả: {item?.description}
                 </StyleContentDetails>
                 <StyleContentSender>
-                  người gởi: {item?.senderName}
+                  người gửi: {item?.senderName}
                 </StyleContentSender>
               </StyleContentOrder>
               {profile?.role === "shipper" ? (
@@ -181,7 +189,7 @@ const StatusOrder: React.FC = () => {
                   mô tả: {item?.description}
                 </StyleContentDetails>
                 <StyleContentSender>
-                  người gởi: {item?.senderName}
+                  người gửi: {item?.senderName}
                 </StyleContentSender>
               </StyleContentOrder>
               {profile?.role === "user" ? (
@@ -221,7 +229,7 @@ const StatusOrder: React.FC = () => {
                   mô tả: {item?.description}
                 </StyleContentDetails>
                 <StyleContentSender>
-                  người gởi: {item?.senderName}
+                  người gửi: {item?.senderName}
                 </StyleContentSender>
               </StyleContentOrder>
             </StyleOrder>
@@ -247,7 +255,7 @@ const StatusOrder: React.FC = () => {
                       mô tả: {item?.description}
                     </StyleContentDetails>
                     <StyleContentSender>
-                      người gởi: {item?.senderName}
+                      người gửi: {item?.senderName}
                     </StyleContentSender>
                   </StyleContentOrder>
                 </StyleOrder>
@@ -285,6 +293,21 @@ const StatusOrder: React.FC = () => {
           />
         </StyleErrorPopup>
       ) : null}
+      {isCheckVerify ? (
+        <StyleErrorPopup>
+          <Alert
+            message="Không thể nhận đơn hàng"
+            description="Tài khoản của bạn chưa được xác thực nên không thể nhận đơn hàng này, vui lòng xác thực tài khoản"
+            type="error"
+            showIcon
+            action={
+              <Button size="small" onClick={() => setIsCheckVerify(false)}>
+                Đóng
+              </Button>
+            }
+          />
+        </StyleErrorPopup>
+      ) : null}
       <StyleContent>
         <Tabs size="large" items={items} onChange={onChange} />
       </StyleContent>
@@ -304,7 +327,7 @@ const StatusOrder: React.FC = () => {
               <StyleDetailTitle>{dataDetails?.name}</StyleDetailTitle>
             </StyleDetailSubTitle>
             <StyleDetailSubTitle>
-              Khối lượng(gam):
+              Khối lượng(kg):
               <StyleDetailTitle>{dataDetails?.productVolume}</StyleDetailTitle>
             </StyleDetailSubTitle>
 
@@ -316,23 +339,25 @@ const StatusOrder: React.FC = () => {
               Các loại tags
               <ul>
                 {dataDetails?.tags?.map((item: any, index: number) => (
-                  <StyleDetailTitle>{index+1}. {item?.name}</StyleDetailTitle>
+                  <StyleDetailTitle>
+                    {index + 1}. {item?.name}
+                  </StyleDetailTitle>
                 ))}
               </ul>
             </StyleDetailSubTitle>
           </StyleContentCenter>
           <StyleContentCenter>
-            <StyleInfoUser>Thông tin người gởi</StyleInfoUser>
+            <StyleInfoUser>Thông tin người gửi</StyleInfoUser>
             <StyleDetailSubTitle>
-              Họ và tên người gởi:
+              Họ và tên người gửi:
               <StyleDetailTitle>{dataDetails?.senderName}</StyleDetailTitle>
             </StyleDetailSubTitle>
             <StyleDetailSubTitle>
-              SĐT người gởi:
+              SĐT người gửi:
               <StyleDetailTitle>{dataDetails?.senderPhone}</StyleDetailTitle>
             </StyleDetailSubTitle>
             <StyleDetailSubTitle>
-              Địa chỉ người gởi:
+              Địa chỉ người gửi:
               <StyleDetailTitle>{dataDetails?.senderAddress}</StyleDetailTitle>
             </StyleDetailSubTitle>
           </StyleContentCenter>

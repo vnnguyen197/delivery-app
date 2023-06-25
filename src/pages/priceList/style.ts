@@ -38,7 +38,7 @@ export const StyleArea = styled.div`
 `
 
 export const StyleTableTitle = styled.div`
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 600;
     color: orange;
 `
