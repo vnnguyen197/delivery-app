@@ -128,7 +128,7 @@ const Order = () => {
           <Input
             size="large"
             name="name"
-            placeholder="Tên gói đơn"
+            placeholder="Tên gói hàng"
             onChange={formik.handleChange}
             value={formik.values.name}
           />
