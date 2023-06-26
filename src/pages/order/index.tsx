@@ -149,7 +149,7 @@ const Order = () => {
             <StyleError>{formik?.errors?.productVolume}</StyleError>
           )}
         </StyleInput>
-        <StyleInput style={{ width: "50%" }}>
+        <StyleInput style={{ width: "50%"}}>
           <Input
             size="large"
             name="description"
@@ -163,9 +163,10 @@ const Order = () => {
         </StyleInput>
         <StyleInput style={{ width: "50%" }}>
           <Select
+            size="large"
             mode="multiple"
             allowClear
-            style={{ width: "100%" }}
+            style={{ width: "100%"}}
             placeholder="Vui lòng chọn tags"
             value={selectedTags}
             onChange={handleChangeTags}
