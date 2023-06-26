@@ -32,7 +32,7 @@ const CollapesedMenu: React.FC = () => {
   const menuItems: any = [
     {
       key: "1",
-      label: "Thông tin cá nhân",
+      label: "Quản lý thông tin cá nhân",
       path: "/profile",
       icon: <UserOutlined />,
     },
@@ -60,7 +60,7 @@ const CollapesedMenu: React.FC = () => {
   const menuItemsShipper: any = [
     {
       key: "1",
-      label: "Thông tin cá nhân",
+      label: "Quản lý thông tin cá nhân",
       path: "/profile",
       icon: <UserOutlined />,
     },

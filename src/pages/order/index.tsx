@@ -117,9 +117,9 @@ const Order = () => {
   return (
     <StyleContainer onSubmit={formik.handleSubmit}>
       <StyleInfo>
-        <StyleTitle>Đăng ký gửi hàng</StyleTitle>
+        <StyleTitle>Tạo đơn hàng</StyleTitle>
         <StyleDes>
-          Đăng ký gửi hàng liên quan đến các thông tin của đơn hàng
+        Tạo đơn hàng liên quan đến các thông tin của đơn hàng
         </StyleDes>
       </StyleInfo>
       <StyleProfile>
@@ -275,7 +275,7 @@ const Order = () => {
                   fontWeight: "600",
                 }}
               >
-                ĐIỀU KHOẢN SỬ DỤNG
+                ĐIỀU KHOẢN DỊCH VỤ
               </div>
               <>
                 <StyleRules>

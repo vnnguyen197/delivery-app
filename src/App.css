@@ -49,7 +49,7 @@
   border-radius: 20px;
   padding: 8px 18px;
   margin: 8px !important;
-}
+  }
 
 .ant-tabs-tab-active {
   background: #00467f !important;
@@ -64,4 +64,9 @@
 .ant-tabs-top > .ant-tabs-nav .ant-tabs-ink-bar {
   border: none !important;
   width: 0px !important;
+}
+
+.ant-tabs-content-holder{
+  overflow-y: scroll !important; 
+  height: 620px !important;  
 }

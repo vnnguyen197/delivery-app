@@ -258,7 +258,7 @@ const Profile = () => {
               </StyleError>
             </>
           ) : null}
-          <StyleRuleUser>Rule : {data?.role}</StyleRuleUser>
+          <StyleRuleUser>Role : {data?.role}</StyleRuleUser>
         </StyleListLeft>
         <StyleListRight>
           <StyleItemRight>

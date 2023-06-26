@@ -126,7 +126,7 @@ const StatusOrder: React.FC = () => {
       key: "WAITING",
       label:
         profile?.role === "user"
-          ? `Đơn chờ xác nhận (${filterCountWaiting.length})`
+          ? `Đơn chờ phê duyệt (${filterCountWaiting.length})`
           : `Đơn chưa nhận (${dataOrderWaiting.length})`,
       children:
         dataChangeStatus.length !== 0 ? (
@@ -173,6 +173,34 @@ const StatusOrder: React.FC = () => {
           </StyleEmptyOrder>
         ),
     },
+    profile?.role === "user"
+      ? {
+          key: "",
+          label: `Đơn đã phê duyệt`,
+          children:
+            dataChangeStatus.length !== 0 ? (
+              dataChangeStatus?.map((item: any) => (
+                <StyleOrder>
+                  <StyleContentOrder onClick={() => showModal(item?.id)}>
+                    <StyleContentTitle>{item?.name}</StyleContentTitle>
+                    <StyleContentDetails>
+                      mô tả: {item?.description}
+                    </StyleContentDetails>
+                    <StyleContentSender>
+                      người gửi: {item?.senderName}
+                    </StyleContentSender>
+                  </StyleContentOrder>
+                  <StyleButton>Hủy đơn hàng</StyleButton>
+                </StyleOrder>
+              ))
+            ) : (
+              <StyleEmptyOrder>
+                <img src={empty} alt="empty order" width={400} height={400} />
+                <StyleTitleEmpty>Không có đơn hàng hiển thị</StyleTitleEmpty>
+              </StyleEmptyOrder>
+            ),
+        }
+      : null,
     {
       key: "SHIPPING",
       label:
