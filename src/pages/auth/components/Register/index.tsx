@@ -24,6 +24,7 @@ import { useLoading } from "contexts/LoadingContext";
 import { useNavigate } from "react-router-dom";
 import authAPI from "services/authAPI";
 import useToken from "hooks/useToken";
+import { addressAPI } from "services/addressAPI";
 
 enum ROLE {
   USER = "user",
@@ -46,7 +47,16 @@ const Register = () => {
   const { setLoadingTrue, setLoadingFalse } = useLoading();
   const navigate = useNavigate();
   const { token } = useToken();
-  const [error, setError] = useState("")
+  const [error, setError] = useState("");
+  const [dataProvince, setDataProvince] = useState<any>([]);
+  const [dataDistrict, setDataDistrict] = useState<any>([]);
+  const [dataWard, setDataWard] = useState<any>([]);
+  const [value, setValue] = useState<number>();
+  const [valueDistrict, setValueDistrict] = useState<number>();
+  const [labelProvince, setLabelProvince] = useState<string>();
+  const [labelDistrict, setLabelDistrict] = useState<string>();
+  const [labelWard, setLabelWard] = useState<string>();
+
   useEffect(() => {
     if (token) {
       setLoadingTrue();
@@ -63,6 +73,47 @@ const Register = () => {
     setGender(value);
   };
 
+  const getAddress = async () => {
+    const listProvincet = await addressAPI.getProvince();
+    setDataProvince(listProvincet?.data);
+  };
+
+  const getDistrictById = async (value: number) => {
+    const listDistrict = await addressAPI.getDistrictById(value);
+    setDataDistrict(listDistrict?.data);
+  };
+
+  const getWardById = async (valueDistrict: number) => {
+    const listWard = await addressAPI.getWardById(valueDistrict);
+    setDataWard(listWard?.data);
+  };
+
+  const handleChange = (newValue: number, value: any) => {
+    setLabelProvince(value?.label);
+    setValue(newValue);
+  };
+
+  const handleChangeDistrict = (newValue: number, value: any) => {
+    setValueDistrict(newValue);
+    setLabelDistrict(value?.label);
+  };
+
+  const handleChangeWard = (newValue: number, value: any) => {
+    setLabelWard(value?.label);
+  };
+
+  useEffect(() => {
+    getAddress();
+  }, []);
+
+  useEffect(() => {
+    if (value) getDistrictById(value as number);
+  }, [value]);
+
+  useEffect(() => {
+    if (valueDistrict) getWardById(valueDistrict as number);
+  }, [valueDistrict]);
+
   const formik = useFormik({
     initialValues: {
       fullName: "",
@@ -78,6 +129,7 @@ const Register = () => {
     onSubmit: async (values) => {
       values.role = role;
       values.gender = gender;
+      values.address = `${values.address} - ${labelWard} - ${labelDistrict} - ${labelProvince}`;
       const { confirmPassword, ...newValues } = values; // create a new object without the confirmPassword property
       try {
         setLoadingTrue();
@@ -86,12 +138,11 @@ const Register = () => {
         setTimeout(() => {
           navigate("/login");
           setLoadingFalse();
-          setError("")
+          setError("");
         }, 700);
       } catch (error: any) {
         setLoadingFalse();
-        setError("Email đã tồn tại")
-
+        setError("Email đã tồn tại");
       }
     },
   });
@@ -124,7 +175,7 @@ const Register = () => {
           />
           {formik?.errors?.email || error ? (
             <StyleError>{formik?.errors?.email || error}</StyleError>
-          ):null}
+          ) : null}
           <StyleWaiting>
             *Vui lòng nhập chính xác email của bạn để tránh trường hợp xấu khi
             quên mật khẩu
@@ -143,11 +194,72 @@ const Register = () => {
             <StyleError>{formik?.errors?.phoneNumber}</StyleError>
           )}
         </StyleInput>
+        <StyleInput style={{ flexDirection: "row", gap: "10px" }}>
+          <Select
+            style={{ width: 200 }}
+            value={value}
+            placeholder="Chọn Tỉnh - Thành Phố"
+            optionFilterProp="children"
+            showSearch={true}
+            filterOption={(input, option) =>
+              option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
+            }
+            filterSort={(optionA: any, optionB: any) =>
+              optionA.label
+                .toLowerCase()
+                .localeCompare(optionB.label.toLowerCase())
+            }
+            options={dataProvince?.map((item: any) => ({
+              value: item.id,
+              label: item.fullName,
+            }))}
+            onChange={handleChange}
+          />
+          <Select
+            value={valueDistrict}
+            style={{ width: 200 }}
+            placeholder="Chọn Quận - Huyện"
+            optionFilterProp="children"
+            showSearch={true}
+            filterOption={(input, option) =>
+              option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
+            }
+            filterSort={(optionA: any, optionB: any) =>
+              optionA.label
+                .toLowerCase()
+                .localeCompare(optionB.label.toLowerCase())
+            }
+            options={dataDistrict?.map((item: any) => ({
+              value: item.id,
+              label: item.fullName,
+            }))}
+            onChange={handleChangeDistrict}
+          />
+          <Select
+            style={{ width: 200 }}
+            placeholder="Chọn Phường - Xã"
+            optionFilterProp="children"
+            showSearch={true}
+            filterOption={(input, option) =>
+              option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
+            }
+            filterSort={(optionA: any, optionB: any) =>
+              optionA.label
+                .toLowerCase()
+                .localeCompare(optionB.label.toLowerCase())
+            }
+            options={dataWard?.map((item: any) => ({
+              value: item.id,
+              label: item.fullName,
+            }))}
+            onChange={handleChangeWard}
+          />
+        </StyleInput>{" "}
         <StyleInput>
           <Input
             size="large"
             name="address"
-            placeholder="Địa chỉ"
+            placeholder="Nhập địa chỉ"
             prefix={<TagOutlined />}
             onChange={formik.handleChange}
             value={formik.values.address}
@@ -155,7 +267,7 @@ const Register = () => {
           {formik?.errors?.address && (
             <StyleError>{formik?.errors?.address}</StyleError>
           )}
-        </StyleInput>
+        </StyleInput>{" "}
         <StyleRule>
           Giới tính:
           <Select
@@ -210,7 +322,6 @@ const Register = () => {
             }))}
           />
         </StyleRule>
-
         <Button type="primary" htmlType="submit" size="large">
           Đăng ký
         </Button>

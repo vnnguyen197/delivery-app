@@ -20,7 +20,7 @@ import {
   InputAvatar,
   StyleVerify,
 } from "./style";
-import { Avatar, Button, DatePicker, Input, Select, Skeleton } from "antd";
+import { Avatar, DatePicker, Input, Select, Skeleton } from "antd";
 import { useFormik } from "formik";
 import { editProfileSchema_ } from "validations/profileSchema";
 import userAPI from "services/userAPI";
@@ -35,6 +35,7 @@ import user from "assets/images/user.png";
 import { useAuthValue } from "hooks/useAuthContext";
 import { UserOutlined } from "@ant-design/icons";
 import { getURLImage } from "utils/getURLImage";
+import { addressAPI } from "services/addressAPI";
 dayjs.extend(customParseFormat); // import the locale you need
 dayjs.locale("en");
 dayjs.extend(weekday);
@@ -65,6 +66,11 @@ const dateFormatList = ["DD/MM/YYYY", "DD/MM/YY", "DD-MM-YYYY", "DD-MM-YY"];
 
 const Profile = () => {
   const [data, setData] = useState<IProfile>();
+  const [dataProvince, setDataProvince] = useState<any>([]);
+  const [dataDistrict, setDataDistrict] = useState<any>([]);
+  const [dataWard, setDataWard] = useState<any>([]);
+  const [value, setValue] = useState<number>();
+  const [valueDistrict, setValueDistrict] = useState<number>();
   const [gender, setGender] = useState(data?.gender);
   const [selectedDate, setSelectedDate] = useState<Dayjs | null>(null);
   const [selectedDateCitizen, setSelectedDateCitizen] = useState<Dayjs | null>(
@@ -73,6 +79,10 @@ const Profile = () => {
   const [showEdit, setShowEdit] = useState(false);
   const { setLoadingTrue, setLoadingFalse } = useLoading();
   const { profile, getProfile } = useAuthValue();
+
+  const [labelProvince, setLabelProvince] = useState<string>();
+  const [labelDistrict, setLabelDistrict] = useState<string>();
+  const [labelWard, setLabelWard] = useState<string>();
 
   const [error, setError] = useState("");
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -102,9 +112,47 @@ const Profile = () => {
     }
   };
 
+  const getAddress = async () => {
+    const listProvincet = await addressAPI.getProvince();
+    setDataProvince(listProvincet?.data);
+  };
+
+  const getDistrictById = async (value: number) => {
+    const listDistrict = await addressAPI.getDistrictById(value);
+    setDataDistrict(listDistrict?.data);
+  };
+
+  const getWardById = async (valueDistrict: number) => {
+    const listWard = await addressAPI.getWardById(valueDistrict);
+    setDataWard(listWard?.data);
+  };
+
+  const handleChange = (newValue: number, value: any) => {
+    setLabelProvince(value?.label);
+    setValue(newValue);
+  };
+
+  const handleChangeDistrict = (newValue: number, value: any) => {
+    setValueDistrict(newValue);
+    setLabelDistrict(value?.label);
+  };
+
+  const handleChangeWard = (newValue: number, value: any) => {
+    setLabelWard(value?.label);
+  };
+
   useEffect(() => {
     fetchData();
+    getAddress();
   }, []);
+
+  useEffect(() => {
+    if (value) getDistrictById(value as number);
+  }, [value]);
+
+  useEffect(() => {
+    if (valueDistrict) getWardById(valueDistrict as number);
+  }, [valueDistrict]);
 
   const initialValues = useMemo(() => {
     return {
@@ -130,6 +178,7 @@ const Profile = () => {
         ? selectedDateCitizen
         : undefined;
       values.birthday = selectedDate ? selectedDate : undefined;
+      values.address = `${values.address} - ${labelWard} - ${labelDistrict} - ${labelProvince}`;
       const { email, ...newValues } = values; // create a new object without the email; property
       setShowEdit(true);
       setLoadingTrue();
@@ -184,7 +233,7 @@ const Profile = () => {
         <StyleTitle>Thông tin cá nhân</StyleTitle>
         <StyleDes>Quản lý thông tin hồ sơ để bảo mật tài khoản</StyleDes>
       </StyleInfo>
-      <StyleInfo style={{marginTop: "24px"}}>
+      <StyleInfo style={{ marginTop: "24px" }}>
         <StyleVerify>
           Tài khoản của bạn{" "}
           {profile?.citizenAdd === "" ||
@@ -371,12 +420,75 @@ const Profile = () => {
               />
             </StyleInput>
             <StyleError></StyleError>
+
             <StyleInput>
-              <StyleLabel>Địa chỉ: </StyleLabel>
+              <Select
+                style={{ width: 200 }}
+                value={value}
+                placeholder="Chọn Tỉnh - Thành Phố"
+                optionFilterProp="children"
+                showSearch={true}
+                filterOption={(input, option) =>
+                  option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                }
+                filterSort={(optionA: any, optionB: any) =>
+                  optionA.label
+                    .toLowerCase()
+                    .localeCompare(optionB.label.toLowerCase())
+                }
+                options={dataProvince?.map((item: any) => ({
+                  value: item.id,
+                  label: item.fullName,
+                }))}
+                onChange={handleChange}
+              />
+              <Select
+                value={valueDistrict}
+                style={{ width: 200 }}
+                placeholder="Chọn Quận - Huyện"
+                optionFilterProp="children"
+                showSearch={true}
+                filterOption={(input, option) =>
+                  option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                }
+                filterSort={(optionA: any, optionB: any) =>
+                  optionA.label
+                    .toLowerCase()
+                    .localeCompare(optionB.label.toLowerCase())
+                }
+                options={dataDistrict?.map((item: any) => ({
+                  value: item.id,
+                  label: item.fullName,
+                }))}
+                onChange={handleChangeDistrict}
+              />
+              <Select
+                style={{ width: 200 }}
+                placeholder="Chọn Phường - Xã"
+                optionFilterProp="children"
+                showSearch={true}
+                filterOption={(input, option) =>
+                  option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                }
+                filterSort={(optionA: any, optionB: any) =>
+                  optionA.label
+                    .toLowerCase()
+                    .localeCompare(optionB.label.toLowerCase())
+                }
+                options={dataWard?.map((item: any) => ({
+                  value: item.id,
+                  label: item.fullName,
+                }))}
+                onChange={handleChangeWard}
+              />
+            </StyleInput>
+            <StyleError></StyleError>
+            <StyleInput>
+              <StyleLabel style={{width: "10%"}}>Địa chỉ: </StyleLabel>
               <Input
                 size="large"
                 name="address"
-                placeholder="Địa chỉ"
+                placeholder="Nhập địa chỉ"
                 onChange={formik.handleChange}
                 value={formik.values.address}
               />
