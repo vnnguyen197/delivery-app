@@ -196,9 +196,10 @@ const Register = () => {
         </StyleInput>
         <StyleInput style={{ flexDirection: "row", gap: "10px" }}>
           <Select
-            style={{ width: 200 }}
+            size="large"
+            style={{ width: "33" }}
             value={value}
-            placeholder="Chọn Tỉnh - Thành Phố"
+            placeholder="Chọn Tỉnh - TP"
             optionFilterProp="children"
             showSearch={true}
             filterOption={(input, option) =>
@@ -216,8 +217,9 @@ const Register = () => {
             onChange={handleChange}
           />
           <Select
+            size="large"
             value={valueDistrict}
-            style={{ width: 200 }}
+            style={{ width: "33%" }}
             placeholder="Chọn Quận - Huyện"
             optionFilterProp="children"
             showSearch={true}
@@ -236,7 +238,8 @@ const Register = () => {
             onChange={handleChangeDistrict}
           />
           <Select
-            style={{ width: 200 }}
+            size="large"
+            style={{ width: "34%" }}
             placeholder="Chọn Phường - Xã"
             optionFilterProp="children"
             showSearch={true}
@@ -254,7 +257,7 @@ const Register = () => {
             }))}
             onChange={handleChangeWard}
           />
-        </StyleInput>{" "}
+        </StyleInput>
         <StyleInput>
           <Input
             size="large"

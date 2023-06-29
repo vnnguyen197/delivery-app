@@ -423,9 +423,10 @@ const Profile = () => {
 
             <StyleInput>
               <Select
-                style={{ width: 200 }}
+                size="large"
+                style={{ width: "33%" }}
                 value={value}
-                placeholder="Chọn Tỉnh - Thành Phố"
+                placeholder="Chọn Tỉnh - TP"
                 optionFilterProp="children"
                 showSearch={true}
                 filterOption={(input, option) =>
@@ -443,8 +444,9 @@ const Profile = () => {
                 onChange={handleChange}
               />
               <Select
+                size="large"
                 value={valueDistrict}
-                style={{ width: 200 }}
+                style={{ width: "33%" }}
                 placeholder="Chọn Quận - Huyện"
                 optionFilterProp="children"
                 showSearch={true}
@@ -463,7 +465,8 @@ const Profile = () => {
                 onChange={handleChangeDistrict}
               />
               <Select
-                style={{ width: 200 }}
+                size="large"
+                style={{ width: "33%" }}
                 placeholder="Chọn Phường - Xã"
                 optionFilterProp="children"
                 showSearch={true}
@@ -484,7 +487,7 @@ const Profile = () => {
             </StyleInput>
             <StyleError></StyleError>
             <StyleInput>
-              <StyleLabel style={{width: "10%"}}>Địa chỉ: </StyleLabel>
+              <StyleLabel style={{ width: "10%" }}>Địa chỉ: </StyleLabel>
               <Input
                 size="large"
                 name="address"

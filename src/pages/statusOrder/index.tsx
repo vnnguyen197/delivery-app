@@ -101,6 +101,8 @@ const StatusOrder: React.FC = () => {
     (item: any) => item?.status === "WAITING"
   );
 
+  const filterCountNew = dataAll?.filter((item: any) => item?.status === "NEW");
+
   const filterCountShipping = dataAll?.filter(
     (item: any) => item?.status === "SHIPPING"
   );
@@ -175,8 +177,8 @@ const StatusOrder: React.FC = () => {
     },
     profile?.role === "user"
       ? {
-          key: "jjj",
-          label: `Đơn đã phê duyệt (1)`,
+          key: "NEW",
+          label: `Đơn đã phê duyệt (${filterCountNew.length})`,
           children:
             dataChangeStatus.length !== 0 ? (
               dataChangeStatus?.map((item: any) => (
@@ -190,7 +192,16 @@ const StatusOrder: React.FC = () => {
                       người gửi: {item?.senderName}
                     </StyleContentSender>
                   </StyleContentOrder>
-                  <StyleButton>Hủy đơn hàng</StyleButton>
+                  <StyleButton
+                    onClick={() =>
+                      handleChangeStatus(
+                        item?.id,
+                        item?.status === "NEW" ? "CANCEL" : null
+                      )
+                    }
+                  >
+                    Hủy đơn hàng
+                  </StyleButton>
                 </StyleOrder>
               ))
             ) : (
@@ -386,7 +397,7 @@ const StatusOrder: React.FC = () => {
             </StyleDetailSubTitle>
             <StyleDetailSubTitle>
               Địa chỉ người gửi:
-              <StyleDetailTitle>{dataDetails?.senderAddress}</StyleDetailTitle>
+              <StyleDetailTitle>{dataDetails?.senderStreet}</StyleDetailTitle>
             </StyleDetailSubTitle>
           </StyleContentCenter>
           <StyleContentCenter>
@@ -401,9 +412,7 @@ const StatusOrder: React.FC = () => {
             </StyleDetailSubTitle>
             <StyleDetailSubTitle>
               Địa chỉ người nhận:
-              <StyleDetailTitle>
-                {dataDetails?.receiverAddress}
-              </StyleDetailTitle>
+              <StyleDetailTitle>{dataDetails?.receiverStreet}</StyleDetailTitle>
             </StyleDetailSubTitle>
           </StyleContentCenter>
         </StyleModal>

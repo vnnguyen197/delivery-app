@@ -23,6 +23,7 @@ import { useNavigate } from "react-router-dom";
 import { Checkbox } from "antd";
 import type { CheckboxChangeEvent } from "antd/es/checkbox";
 import { useAuthValue } from "hooks/useAuthContext";
+import { addressAPI } from "services/addressAPI";
 
 const { Option } = Select;
 
@@ -36,6 +37,25 @@ const Order = () => {
   const [isRules, setIsRules] = useState(false);
   const { profile } = useAuthValue();
 
+  //address
+  const [dataProvince, setDataProvince] = useState<any>([]);
+  const [dataDistrict, setDataDistrict] = useState<any>([]);
+  const [dataWard, setDataWard] = useState<any>([]);
+  const [value, setValue] = useState<number>();
+  const [valueDistrict, setValueDistrict] = useState<number>();
+  const [valueWard, setValueWard] = useState<number>();
+  const [labelProvince, setLabelProvince] = useState<string>();
+  const [labelDistrict, setLabelDistrict] = useState<string>();
+  const [labelWard, setLabelWard] = useState<string>();
+  const [valueReceiver, setValueReceiver] = useState<number>();
+  const [valueDistrictReceiver, setValueDistrictReceiver] = useState<number>();
+  const [valueWardReceiver, setValueWardReceiver] = useState<number>();
+
+  //receiver address
+  const [labelProvinceReceiver, setLabelProvinceReceiver] = useState<string>();
+  const [labelDistrictReceiver, setLabelDistrictReceiver] = useState<string>();
+  const [labelWardReceiver, setLabelWardReceiver] = useState<string>();
+
   const formik = useFormik({
     initialValues: {
       name: "",
@@ -43,16 +63,31 @@ const Order = () => {
       description: "",
       senderName: "",
       senderPhone: "",
-      senderAddress: "",
+      senderStreet: "",
       receiverName: "",
       receiverPhone: "",
-      receiverAddress: "",
+      receiverStreet: "",
       tags: [],
+      provinceSenderId: value,
+      districtSenderId: valueDistrict,
+      wardSenderId: valueWard,
+      provinceReceiverId: valueReceiver,
+      districtReceiverId: valueDistrictReceiver,
+      wardReceiverId : valueWardReceiver
     },
     validationSchema: addOrderSchema_,
     onSubmit: async (values) => {
       values.tags = selectedTags;
+      values.senderStreet = `${values.senderStreet} - ${labelWard} - ${labelDistrict} - ${labelProvince}`;
+      values.receiverStreet = `${values.receiverStreet} - ${labelWardReceiver} - ${labelDistrictReceiver} - ${labelProvinceReceiver}`;
+      values.provinceSenderId = value;
+      values.districtSenderId = valueDistrict;
+      values.wardSenderId = valueWard
+      values.provinceReceiverId = valueReceiver
+      values.districtReceiverId = valueDistrictReceiver
+      values.wardReceiverId = valueWardReceiver
       setLoadingTrue();
+      const { ...newValues } = values; // create a new object without the email; property
       if (!isCheck) {
         if (
           profile?.citizenAdd !== "" &&
@@ -60,7 +95,7 @@ const Order = () => {
           profile?.citizenDate !== ""
         ) {
           try {
-            await orderAPI.createOrder(values);
+            await orderAPI.createOrder(newValues);
             navigate("/");
             setLoadingFalse();
           } catch (error: any) {
@@ -114,12 +149,87 @@ const Order = () => {
   const handleChangeTags = (selectedValues: any) => {
     setSelectedTags(selectedValues);
   };
+
+  const getAddress = async () => {
+    const listProvincet = await addressAPI.getProvince();
+    setDataProvince(listProvincet?.data);
+  };
+
+  const getDistrictById = async (value: number, valueReceiver: number) => {
+    if (value) {
+      const listDistrict = await addressAPI.getDistrictById(value);
+      setDataDistrict(listDistrict?.data);
+    }
+    if (valueReceiver) {
+      let listDistrict = await addressAPI.getDistrictById(valueReceiver);
+      setDataDistrict(listDistrict?.data);
+    }
+  };
+
+  const getWardById = async (
+    valueDistrict: number,
+    valueDistrictReceiver: number
+  ) => {
+    if (valueDistrict) {
+      const listWard = await addressAPI.getWardById(valueDistrict);
+      setDataWard(listWard?.data);
+    }
+    if (valueDistrictReceiver) {
+      const listWard = await addressAPI.getWardById(valueDistrictReceiver);
+      setDataWard(listWard?.data);
+    }
+  };
+
+  const handleChange = (newValue: number, value: any) => {
+    setLabelProvince(value?.label);
+    setValue(newValue);
+  };
+
+  const handleChangeProvinceReceiver = (newValue: number, value: any) => {
+    setValueReceiver(newValue);
+    setLabelProvinceReceiver(value?.label);
+  };
+
+  const handleChangeDistrict = (newValue: number, value: any) => {
+    setValueDistrict(newValue);
+    setLabelDistrict(value?.label);
+  };
+
+  const handleChangeDistrictReceiver = (newValue: number, value: any) => {
+    setValueDistrictReceiver(newValue);
+    setLabelDistrictReceiver(value?.label);
+  };
+
+  const handleChangeWard = (newValue: number, value: any) => {
+    setLabelWard(value?.label);
+    setValueWard(newValue);
+  };
+
+  const handleChangeWardReceiver = (newValue: number, value: any) => {
+    setLabelWardReceiver(value?.label);
+    setValueWardReceiver(newValue);
+  };
+
+  useEffect(() => {
+    getAddress();
+  }, []);
+
+  useEffect(() => {
+    if (value || valueReceiver)
+      getDistrictById(value as number, valueReceiver as number);
+  }, [value, valueReceiver]);
+
+  useEffect(() => {
+    if (valueDistrict)
+      getWardById(valueDistrict as number, valueDistrictReceiver as number);
+  }, [valueDistrict, valueDistrictReceiver]);
+
   return (
     <StyleContainer onSubmit={formik.handleSubmit}>
       <StyleInfo>
         <StyleTitle>Tạo đơn hàng</StyleTitle>
         <StyleDes>
-        Tạo đơn hàng liên quan đến các thông tin của đơn hàng
+          Tạo đơn hàng liên quan đến các thông tin của đơn hàng
         </StyleDes>
       </StyleInfo>
       <StyleProfile>
@@ -149,7 +259,7 @@ const Order = () => {
             <StyleError>{formik?.errors?.productVolume}</StyleError>
           )}
         </StyleInput>
-        <StyleInput style={{ width: "50%"}}>
+        <StyleInput style={{ width: "50%" }}>
           <Input
             size="large"
             name="description"
@@ -166,7 +276,7 @@ const Order = () => {
             size="large"
             mode="multiple"
             allowClear
-            style={{ width: "100%"}}
+            style={{ width: "100%" }}
             placeholder="Vui lòng chọn tags"
             value={selectedTags}
             onChange={handleChangeTags}
@@ -204,16 +314,80 @@ const Order = () => {
               <StyleError>{formik?.errors?.senderPhone}</StyleError>
             )}
           </StyleInput>
+          <StyleInput style={{ flexDirection: "row", gap: "10px" }}>
+            <Select
+              size="large"
+              style={{ width: "33%" }}
+              value={value}
+              placeholder="Chọn Tỉnh - Thành Phố"
+              optionFilterProp="children"
+              showSearch={true}
+              filterOption={(input, option) =>
+                option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
+              }
+              filterSort={(optionA: any, optionB: any) =>
+                optionA.label
+                  .toLowerCase()
+                  .localeCompare(optionB.label.toLowerCase())
+              }
+              options={dataProvince?.map((item: any) => ({
+                value: item.id,
+                label: item.fullName,
+              }))}
+              onChange={handleChange}
+            />
+            <Select
+              size="large"
+              value={valueDistrict}
+              style={{ width: "33%" }}
+              placeholder="Chọn Quận - Huyện"
+              optionFilterProp="children"
+              showSearch={true}
+              filterOption={(input, option) =>
+                option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
+              }
+              filterSort={(optionA: any, optionB: any) =>
+                optionA.label
+                  .toLowerCase()
+                  .localeCompare(optionB.label.toLowerCase())
+              }
+              options={dataDistrict?.map((item: any) => ({
+                value: item.id,
+                label: item.fullName,
+              }))}
+              onChange={handleChangeDistrict}
+            />
+            <Select
+              size="large"
+              style={{ width: "33%" }}
+              placeholder="Chọn Phường - Xã"
+              optionFilterProp="children"
+              showSearch={true}
+              filterOption={(input, option) =>
+                option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
+              }
+              filterSort={(optionA: any, optionB: any) =>
+                optionA.label
+                  .toLowerCase()
+                  .localeCompare(optionB.label.toLowerCase())
+              }
+              options={dataWard?.map((item: any) => ({
+                value: item.id,
+                label: item.fullName,
+              }))}
+              onChange={handleChangeWard}
+            />
+          </StyleInput>
           <StyleInput>
             <Input
               size="large"
-              name="senderAddress"
-              placeholder="Địa chỉ"
+              name="senderStreet"
+              placeholder="Nhập địa chỉ người gửi"
               onChange={formik.handleChange}
-              value={formik.values.senderAddress}
+              value={formik.values.senderStreet}
             />
-            {formik?.errors?.senderAddress && (
-              <StyleError>{formik?.errors?.senderAddress}</StyleError>
+            {formik?.errors?.senderStreet && (
+              <StyleError>{formik?.errors?.senderStreet}</StyleError>
             )}
           </StyleInput>
         </StyleListRight>
@@ -243,16 +417,80 @@ const Order = () => {
               <StyleError>{formik?.errors?.receiverPhone}</StyleError>
             )}
           </StyleInput>
+          <StyleInput style={{ flexDirection: "row", gap: "10px" }}>
+            <Select
+              size="large"
+              style={{ width: "33%" }}
+              value={valueReceiver}
+              placeholder="Chọn Tỉnh - Thành Phố"
+              optionFilterProp="children"
+              showSearch={true}
+              filterOption={(input, option) =>
+                option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
+              }
+              filterSort={(optionA: any, optionB: any) =>
+                optionA.label
+                  .toLowerCase()
+                  .localeCompare(optionB.label.toLowerCase())
+              }
+              options={dataProvince?.map((item: any) => ({
+                value: item.id,
+                label: item.fullName,
+              }))}
+              onChange={handleChangeProvinceReceiver}
+            />
+            <Select
+              size="large"
+              value={valueDistrictReceiver}
+              style={{ width: "33%" }}
+              placeholder="Chọn Quận - Huyện"
+              optionFilterProp="children"
+              showSearch={true}
+              filterOption={(input, option) =>
+                option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
+              }
+              filterSort={(optionA: any, optionB: any) =>
+                optionA.label
+                  .toLowerCase()
+                  .localeCompare(optionB.label.toLowerCase())
+              }
+              options={dataDistrict?.map((item: any) => ({
+                value: item.id,
+                label: item.fullName,
+              }))}
+              onChange={handleChangeDistrictReceiver}
+            />
+            <Select
+              size="large"
+              style={{ width: "33%" }}
+              placeholder="Chọn Phường - Xã"
+              optionFilterProp="children"
+              showSearch={true}
+              filterOption={(input, option) =>
+                option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
+              }
+              filterSort={(optionA: any, optionB: any) =>
+                optionA.label
+                  .toLowerCase()
+                  .localeCompare(optionB.label.toLowerCase())
+              }
+              options={dataWard?.map((item: any) => ({
+                value: item.id,
+                label: item.fullName,
+              }))}
+              onChange={handleChangeWardReceiver}
+            />
+          </StyleInput>
           <StyleInput>
             <Input
               size="large"
-              name="receiverAddress"
-              placeholder="Địa chỉ"
+              name="receiverStreet"
+              placeholder="Nhập địa chỉ người nhận"
               onChange={formik.handleChange}
-              value={formik.values.receiverAddress}
+              value={formik.values.receiverStreet}
             />
-            {formik?.errors?.receiverAddress && (
-              <StyleError>{formik?.errors?.receiverAddress}</StyleError>
+            {formik?.errors?.receiverStreet && (
+              <StyleError>{formik?.errors?.receiverStreet}</StyleError>
             )}
           </StyleInput>
           <Checkbox onChange={onChange}>

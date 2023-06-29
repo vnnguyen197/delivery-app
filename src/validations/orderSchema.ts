@@ -22,7 +22,7 @@ export const addOrderSchema_ = yup.object().shape({
       excludeEmptyString: true,
     })
     .max(10, "Số điện thoại tối đa là 10 số"),
-  senderAddress: yup.string().required("Địa chỉ người gửi không được để trống"),
+    senderStreet: yup.string().required("Địa chỉ người gửi không được để trống"),
   receiverName: yup
     .string()
     .required("Họ và tên không được để trống")
@@ -40,7 +40,7 @@ export const addOrderSchema_ = yup.object().shape({
       excludeEmptyString: true,
     })
     .max(10, "Số điện thoại tối đa là 10 số"),
-  receiverAddress: yup
+    receiverStreet: yup
     .string()
     .required("Địa chỉ người nhận không được để trống"),
 });
