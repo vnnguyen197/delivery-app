@@ -34,9 +34,11 @@ const Order = () => {
   const [tags, setTags] = useState([]);
   const [selectedTags, setSelectedTags] = useState([]);
   const [isCheck, setIsCheck] = useState(false);
+  console.log("👋  isCheck:", isCheck);
   const [isRules, setIsRules] = useState(false);
+  console.log("👋  isRules:", isRules);
   const { profile } = useAuthValue();
-
+  const [openModal, setOpenModal] = useState(false);
   //address
   const [dataProvince, setDataProvince] = useState<any>([]);
   const [dataDistrict, setDataDistrict] = useState<any>([]);
@@ -73,7 +75,7 @@ const Order = () => {
       wardSenderId: valueWard,
       provinceReceiverId: valueReceiver,
       districtReceiverId: valueDistrictReceiver,
-      wardReceiverId : valueWardReceiver
+      wardReceiverId: valueWardReceiver,
     },
     validationSchema: addOrderSchema_,
     onSubmit: async (values) => {
@@ -82,13 +84,13 @@ const Order = () => {
       values.receiverStreet = `${values.receiverStreet} - ${labelWardReceiver} - ${labelDistrictReceiver} - ${labelProvinceReceiver}`;
       values.provinceSenderId = value;
       values.districtSenderId = valueDistrict;
-      values.wardSenderId = valueWard
-      values.provinceReceiverId = valueReceiver
-      values.districtReceiverId = valueDistrictReceiver
-      values.wardReceiverId = valueWardReceiver
+      values.wardSenderId = valueWard;
+      values.provinceReceiverId = valueReceiver;
+      values.districtReceiverId = valueDistrictReceiver;
+      values.wardReceiverId = valueWardReceiver;
       setLoadingTrue();
       const { ...newValues } = values; // create a new object without the email; property
-      if (!isCheck) {
+      if (isRules === true) {
         if (
           profile?.citizenAdd !== "" &&
           profile?.citizenId !== "" &&
@@ -115,6 +117,7 @@ const Order = () => {
 
   const onChange = () => {
     setIsCheck(true);
+    setOpenModal(true);
     setError("");
   };
 
@@ -125,8 +128,8 @@ const Order = () => {
 
   const handleOk = () => {
     if (isRules) {
-      setIsCheck(false);
       setIsRules(true);
+      setOpenModal(false);
       setError("");
     } else {
       setError("Vui lòng đồng ý điều khoản của chúng tôi");
@@ -501,7 +504,7 @@ const Order = () => {
             centered
             title="Bạn đã chắc chắn rằng mình sẽ không gửi hàng cấm / hàng vi phạm
             pháp luật chứ?"
-            open={isCheck}
+            open={openModal}
             onOk={handleOk}
             onCancel={handleCancel}
             width={800}

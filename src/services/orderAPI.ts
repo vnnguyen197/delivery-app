@@ -13,8 +13,8 @@ const orderAPI = {
     const url = `/orders/${id}`;
     return axiosClient.get(url);
   },
-  getOrderWaiting: () => {
-    const url = `/orders/?status=WAITING`;
+  getOrderNew: () => {
+    const url = `/orders/?status=NEW`;
     return axiosClient.get(url);
   },
   createOrder: (data: any) => {

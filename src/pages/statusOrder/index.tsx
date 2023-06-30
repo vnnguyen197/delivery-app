@@ -29,9 +29,10 @@ import empty from "assets/images/empty_result.svg";
 const StatusOrder: React.FC = () => {
   const [dataAll, setDataAll] = useState([]);
   const [dataDetails, setDataDetails] = useState<any>([]);
-  const [dataOrderWaiting, setDataOrderWaiting] = useState<any>([]);
+  const [dataOrderNew, setDataOrderNew] = useState<any>([]);
   const [dataChangeStatus, setDataChangeStatus] = useState([]);
-  const [status, setStatus] = useState("WAITING");
+  console.log("👋  dataChangeStatus:", dataChangeStatus)
+  const [status, setStatus] = useState("NEW");
   const [idOrder, setIdOrder] = useState("");
   const [isCheckError, setIsCheckError] = useState(false);
   const [isCheckVerify, setIsCheckVerify] = useState(false);
@@ -77,8 +78,8 @@ const StatusOrder: React.FC = () => {
   };
 
   const fetchDataOrderWaiting = async () => {
-    const dataDetailOrderWaiting = await orderAPI.getOrderWaiting();
-    setDataOrderWaiting(dataDetailOrderWaiting?.data?.rows);
+    const dataDetailOrderWaiting = await orderAPI.getOrderNew();
+    setDataOrderNew(dataDetailOrderWaiting?.data?.rows);
   };
 
   useEffect(() => {
@@ -124,61 +125,10 @@ const StatusOrder: React.FC = () => {
   };
 
   const items: any = [
-    {
-      key: "WAITING",
-      label:
-        profile?.role === "user"
-          ? `Đơn chờ phê duyệt (${filterCountWaiting.length})`
-          : `Đơn chưa nhận (${dataOrderWaiting.length})`,
-      children:
-        dataChangeStatus.length !== 0 ? (
-          dataChangeStatus?.map((item: any) => (
-            <StyleOrder>
-              <StyleContentOrder onClick={() => showModal(item?.id)}>
-                <StyleContentTitle>{item?.name}</StyleContentTitle>
-                <StyleContentDetails>
-                  mô tả: {item?.description}
-                </StyleContentDetails>
-                <StyleContentSender>
-                  người gửi: {item?.senderName}
-                </StyleContentSender>
-              </StyleContentOrder>
-              {profile?.role === "shipper" ? (
-                <StyleButton
-                  onClick={() =>
-                    handleChangeStatus(
-                      item?.id,
-                      item?.status === "WAITING" ? "SHIPPING" : null
-                    )
-                  }
-                >
-                  Nhận đơn hàng
-                </StyleButton>
-              ) : profile?.role === "user" ? (
-                <StyleButton
-                  onClick={() =>
-                    handleChangeStatus(
-                      item?.id,
-                      item?.status === "WAITING" ? "CANCEL" : null
-                    )
-                  }
-                >
-                  Hủy đơn hàng
-                </StyleButton>
-              ) : null}
-            </StyleOrder>
-          ))
-        ) : (
-          <StyleEmptyOrder>
-            <img src={empty} alt="empty order" width={400} height={400} />
-            <StyleTitleEmpty>Không có đơn hàng hiển thị</StyleTitleEmpty>
-          </StyleEmptyOrder>
-        ),
-    },
     profile?.role === "user"
       ? {
-          key: "NEW",
-          label: `Đơn đã phê duyệt (${filterCountNew.length})`,
+          key: "WAITING",
+          label: `Đơn chờ phê duyệt (${filterCountWaiting.length})`,
           children:
             dataChangeStatus.length !== 0 ? (
               dataChangeStatus?.map((item: any) => (
@@ -212,6 +162,57 @@ const StatusOrder: React.FC = () => {
             ),
         }
       : null,
+    {
+      key: "NEW",
+      label:
+        profile?.role === "user"
+          ? `Đơn đã phê duyệt (${filterCountNew.length})`
+          : `Đơn chưa nhận (${dataOrderNew.length})`,
+      children:
+        dataChangeStatus.length !== 0 ? (
+          dataChangeStatus?.map((item: any) => (
+            <StyleOrder>
+              <StyleContentOrder onClick={() => showModal(item?.id)}>
+                <StyleContentTitle>{item?.name}</StyleContentTitle>
+                <StyleContentDetails>
+                  mô tả: {item?.description}
+                </StyleContentDetails>
+                <StyleContentSender>
+                  người gửi: {item?.senderName}
+                </StyleContentSender>
+              </StyleContentOrder>
+              {profile?.role === "shipper" ? (
+                <StyleButton
+                  onClick={() =>
+                    handleChangeStatus(
+                      item?.id,
+                      item?.status === "NEW" ? "SHIPPING" : null
+                    )
+                  }
+                >
+                  Nhận đơn hàng
+                </StyleButton>
+              ) : profile?.role === "user" ? (
+                <StyleButton
+                  onClick={() =>
+                    handleChangeStatus(
+                      item?.id,
+                      item?.status === "NEW" ? "CANCEL" : null
+                    )
+                  }
+                >
+                  Hủy đơn hàng
+                </StyleButton>
+              ) : null}
+            </StyleOrder>
+          ))
+        ) : (
+          <StyleEmptyOrder>
+            <img src={empty} alt="empty order" width={400} height={400} />
+            <StyleTitleEmpty>Không có đơn hàng hiển thị</StyleTitleEmpty>
+          </StyleEmptyOrder>
+        ),
+    },
     {
       key: "SHIPPING",
       label:
