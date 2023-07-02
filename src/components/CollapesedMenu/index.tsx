@@ -4,7 +4,7 @@ import {
   DesktopOutlined,
   UserOutlined,
   LogoutOutlined,
-  TableOutlined
+  TableOutlined,
 } from "@ant-design/icons";
 import { Menu } from "antd";
 import { Link, useNavigate } from "react-router-dom";
@@ -44,7 +44,7 @@ const CollapesedMenu: React.FC = () => {
     },
     {
       key: "3",
-      label: "Theo dõi đơn hàng",
+      label: "Quản lý các đơn hàng đã đặt",
       path: "/",
       icon: <ContainerOutlined />,
     },
@@ -52,7 +52,7 @@ const CollapesedMenu: React.FC = () => {
       key: "5",
       label: "Bảng giá đơn hàng",
       path: "/price-list",
-      icon: <TableOutlined /> ,
+      icon: <TableOutlined />,
     },
     { key: "4", label: "Đăng xuất", icon: <LogoutOutlined /> },
   ];
@@ -66,7 +66,7 @@ const CollapesedMenu: React.FC = () => {
     },
     {
       key: "3",
-      label: "Theo dõi đơn hàng",
+      label: "Theo dõi các đơn hàng",
       path: "/",
       icon: <ContainerOutlined />,
     },
@@ -74,7 +74,7 @@ const CollapesedMenu: React.FC = () => {
       key: "4",
       label: "Bảng giá đơn hàng",
       path: "/price-list",
-      icon: <TableOutlined /> ,
+      icon: <TableOutlined />,
     },
     { key: "2", label: "Đăng xuất", icon: <LogoutOutlined /> },
   ];

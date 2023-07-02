@@ -31,8 +31,7 @@ const StatusOrder: React.FC = () => {
   const [dataDetails, setDataDetails] = useState<any>([]);
   const [dataOrderNew, setDataOrderNew] = useState<any>([]);
   const [dataChangeStatus, setDataChangeStatus] = useState([]);
-  console.log("👋  dataChangeStatus:", dataChangeStatus)
-  const [status, setStatus] = useState("NEW");
+  const [status, setStatus] = useState("WAITING");
   const [idOrder, setIdOrder] = useState("");
   const [isCheckError, setIsCheckError] = useState(false);
   const [isCheckVerify, setIsCheckVerify] = useState(false);
