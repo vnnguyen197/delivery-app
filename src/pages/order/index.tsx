@@ -34,9 +34,7 @@ const Order = () => {
   const [tags, setTags] = useState([]);
   const [selectedTags, setSelectedTags] = useState([]);
   const [isCheck, setIsCheck] = useState(false);
-  console.log("👋  isCheck:", isCheck);
   const [isRules, setIsRules] = useState(false);
-  console.log("👋  isRules:", isRules);
   const { profile } = useAuthValue();
   const [openModal, setOpenModal] = useState(false);
   //address
